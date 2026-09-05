@@ -1,0 +1,29 @@
+{
+  "name": "AngularGMS-SpringbootUserMicroservice",
+  "status": "applied",
+  "description": "Spring Boot microservice for user management with JWT-based authentication, part of an Angular GMS project",
+  "topics": [
+    "java",
+    "spring-boot",
+    "microservice",
+    "jwt",
+    "spring-security",
+    "mysql"
+  ],
+  "confidence": "low",
+  "reasoning": "Only pom.xml dependencies and file tree were available; no entry-point source files, controllers, or application.properties could be read, so specific endpoints, models, and configuration could not be verified. Description and content are based solely on declared Maven dependencies (Spring Boot, JPA, web services, Security, JWT, MySQL) and the repository name implying an Angular GMS pairing.",
+  "unknowns": [
+    "What entities/endpoints the microservice actually exposes",
+    "Whether this connects to a companion Angular frontend repo and how",
+    "Required environment variables or application.properties configuration for MySQL/JWT",
+    "Whether any license applies to this project",
+    "Purpose of 'GMS' in the repo name (e.g., Garage/Grading Management System)"
+  ],
+  "generatedAt": "2026-09-05T16:32:56.541Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:31.300Z",
+    "readmeSha": "f38b70a2ee92277dd3764b5b734754e6169a6007",
+    "metadataUpdated": true
+  }
+}

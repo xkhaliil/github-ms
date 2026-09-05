@@ -1,0 +1,35 @@
+{
+  "repo": {
+    "name": "atelier-01",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2022-10-04T21:02:03Z",
+    "pushedAt": "2023-10-09T08:51:16Z",
+    "defaultBranch": "master",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "Python": 21
+  },
+  "tree": [
+    "samplegit.py"
+  ],
+  "treeTruncated": false,
+  "manifests": [],
+  "existingReadme": null,
+  "entrypoints": [
+    {
+      "path": "samplegit.py",
+      "text": "print(\"hello world\")\n"
+    }
+  ],
+  "commitMessages": [
+    "Premier commit"
+  ],
+  "bytes": 478
+}

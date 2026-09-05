@@ -13,8 +13,9 @@
     "noEmit": true,
     "composite": true,
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["../shared/*"],
+      "@core/*": ["../core/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "../shared/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "../shared/**/*.ts", "../core/**/*.ts"]
 }

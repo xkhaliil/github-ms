@@ -1,0 +1,70 @@
+{
+  "repo": {
+    "name": "flutterWithSpringboot",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2023-12-05T23:25:45Z",
+    "pushedAt": "2023-12-05T23:27:05Z",
+    "defaultBranch": "main",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "Dart": 96176,
+    "Java": 18171
+  },
+  "tree": [
+    "lib",
+    "lib/main.dart",
+    "lib/models",
+    "lib/models/class_model.dart",
+    "lib/models/department_model.dart",
+    "lib/models/student_model.dart",
+    "lib/models/subject_model.dart",
+    "lib/models/user_model.dart",
+    "lib/pages",
+    "lib/pages/class.dart",
+    "lib/pages/class_students.dart",
+    "lib/pages/department.dart",
+    "lib/pages/department_class.dart",
+    "lib/pages/home.dart",
+    "lib/pages/sign_in.dart",
+    "lib/pages/sign_up.dart",
+    "lib/pages/subject.dart",
+    "lib/services",
+    "lib/services/auth_service.dart",
+    "lib/services/class_service.dart",
+    "lib/services/department_service.dart",
+    "lib/services/student_service.dart",
+    "lib/services/subject_service.dart",
+    "pubspec.yaml",
+    "server",
+    "server/university-management",
+    "server/university-management/HELP.md",
+    "server/university-management/mvnw",
+    "server/university-management/mvnw.cmd",
+    "server/university-management/pom.xml",
+    "server/university-management/src",
+    "server/university-management/target"
+  ],
+  "treeTruncated": false,
+  "manifests": [
+    {
+      "file": "pubspec.yaml",
+      "ecosystem": "dart",
+      "dependencies": [],
+      "packageName": "client",
+      "description": "A new Flutter project."
+    }
+  ],
+  "existingReadme": null,
+  "entrypoints": [],
+  "commitMessages": [
+    "Add files via upload"
+  ],
+  "bytes": 1451
+}

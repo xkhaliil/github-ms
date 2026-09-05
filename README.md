@@ -15,7 +15,7 @@ reviewed by you before anything is pushed.
 
 A profile full of unlabelled repositories reads as abandoned work, whatever the code is like. gitms fixes the three things a visitor actually sees: the one-line description under the repo name, the topic tags, and the README that loads when they click in.
 
-It runs on your machine, reads your repos through your own GitHub token, and writes nothing to GitHub until you approve it, repo by repo.
+It runs entirely in your browser, reads your repos through your own GitHub token, and writes nothing to GitHub until you approve it, repo by repo.
 
 ## Getting started
 
@@ -24,7 +24,7 @@ npm install
 npm run dev
 ```
 
-A browser opens at `http://127.0.0.1:5123`. On first run you are asked for two credentials:
+Open `http://127.0.0.1:5123`. On first run you are asked for two credentials:
 
 | Credential | Where to get it | What it needs |
 | --- | --- | --- |
@@ -33,7 +33,7 @@ A browser opens at `http://127.0.0.1:5123`. On first run you are asked for two c
 
 A fine-grained GitHub token works too, but needs Metadata: read, Contents: write and Administration: write. GitHub does not report a fine-grained token's permissions, so the app cannot verify them before the run and says so.
 
-Both keys are held in memory by default and disappear when you stop the server. "Remember on this machine" writes them to `~/.gitms/credentials.json`, protected by file permissions — that is not encryption, and the app says so rather than implying otherwise. Neither key is ever written into the project folder or a log line.
+Both keys are held in the tab by default and disappear when you close it. "Remember in this browser" keeps them in the site's local storage so they survive a reload — that is not encryption, and the app says so rather than implying otherwise. Neither key is ever sent anywhere except to Anthropic and GitHub.
 
 ## How it works
 
@@ -43,19 +43,10 @@ Both keys are held in memory by default and disappear when you stop the server. 
 4. **Review** — every proposal is editable, side by side with the exact evidence the model was given.
 5. **Apply** — writes only what you approved. Dry run is on by default and prints the exact API calls without sending them.
 
-Proposals are plain files under `.gitms-data/`, so you can open, diff or hand-edit any of them outside the app:
-
-```
-.gitms-data/
-├── inventory.json          scan result
-├── audit.json              hygiene report
-├── manifest.json           index of proposals and their status
-└── repos/<name>/
-    ├── proposal.json       description, topics, confidence, reasoning
-    ├── README.md           generated - edit this file directly if you prefer
-    ├── README.original.md  backup, written before any overwrite
-    └── evidence.json       exactly what the model was shown
-```
+The scan, every proposal and the evidence behind it are stored in your browser
+(IndexedDB) and nowhere else. Nothing is uploaded, so Settings → Delete local
+data is the whole deletion. A run happens in the tab: closing it stops the run,
+though every repo finished up to that point is already saved.
 
 ## Nothing is invented
 
@@ -80,19 +71,18 @@ Mock mode runs the entire pipeline without calling the API, for free. Use it onc
 - Existing READMEs are backed up locally before being replaced.
 - Applying is idempotent — an applied repo is skipped on re-runs.
 - Forks, archived and private repos are excluded by default.
-- The server binds to `127.0.0.1` only, validates the request `Origin`, and requires a per-process session token on every mutating request.
+- There is no gitms server. The page calls `api.anthropic.com` and `api.github.com` directly, so your keys are never transmitted to a third party, and a Content-Security-Policy `connect-src` naming only those two hosts is served alongside the app.
 
 ## Commands
 
 | Command | Does |
 | --- | --- |
-| `npm run dev` | API on 5124, UI on 5123, both watching |
-| `npm run build` | Builds the frontend and typechecks both halves |
-| `npm start` | Production mode — one server on 5123 serving the built UI |
+| `npm run dev` | Vite dev server on 5123 |
+| `npm run build` | Typechecks, then builds the static site into `web/dist` |
+| `npm run preview` | Serves the built site exactly as it will be deployed |
 | `npm test` | Unit tests for the schema, hygiene rules and manifest parsers |
 | `npm run brand:render` | Regenerates the raster brand assets from the SVG sources |
-| `npm run qa:seed` | Writes fixture repos into `.gitms-data/` so every screen renders without a real account |
-| `npm run qa:shoot` | Screenshots every screen to `.screenshots/` for visual review (drives your installed Chrome) |
+| `npm run qa:shoot` | Loads fixture data into a browser and screenshots every screen to `.screenshots/` |
 
 ## Interface
 
@@ -106,13 +96,29 @@ The full identity — mark, palette, type and voice — is in [`brand/BRAND.md`]
 ## Layout
 
 ```
-server/    Fastify API, GitHub and Anthropic clients, analysis, pipelines
-web/       React UI
-shared/    Types and constants used by both — the wire contract
+core/      GitHub and Anthropic clients, analysis, prompts, pricing
+web/       React UI, plus the browser-side store, jobs and pipelines
+shared/    Types and constants used throughout
 brand/     Logo, icons, social image, brand guidelines
-scripts/   Dev tooling: fixtures, screenshots, brand rendering
+scripts/   Dev tooling: brand rendering
 tests/     vitest
 ```
+
+## Deploying
+
+The app is a static bundle with no backend, so any static host works. Both
+[`vercel.json`](vercel.json) and [`netlify.toml`](netlify.toml) are checked in
+and set the same build (`npm run build` → `web/dist`), SPA rewrite and security
+headers.
+
+```bash
+vercel deploy --prod        # or: connect the repo at vercel.com
+netlify deploy --prod       # or: connect the repo at netlify.com
+```
+
+No environment variables are needed — deliberately. Each visitor supplies their
+own Anthropic key and GitHub token, which stay in their browser, so a deployment
+holds no secrets and cannot spend anyone else's credit.
 
 ## License
 

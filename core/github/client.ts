@@ -2,7 +2,6 @@ import { Octokit } from "@octokit/rest";
 import { throttling } from "@octokit/plugin-throttling";
 import { retry } from "@octokit/plugin-retry";
 import type { GithubIdentity } from "../../shared/types.js";
-import { requireGithubToken } from "../session.js";
 
 /** Shape of the request descriptor the throttling plugin hands its callbacks. */
 interface ThrottleOptions {
@@ -42,8 +41,15 @@ export function isExpectedApiNoise(message: string): boolean {
   return false;
 }
 
+/** `process` does not exist in the browser bundle, so read it defensively. */
+function logLevel(): string | undefined {
+  return typeof process !== "undefined"
+    ? process.env?.["LOG_LEVEL"]
+    : undefined;
+}
+
 function quietLog() {
-  const verbose = process.env["LOG_LEVEL"] === "debug";
+  const verbose = logLevel() === "debug";
   return {
     debug: () => {},
     info: () => {},
@@ -61,15 +67,29 @@ export function createClient(token: string): GithubClient {
     log: quietLog(),
     throttle: {
       // Primary rate limit: back off and retry twice, then give up loudly.
-      onRateLimit: (_retryAfter: number, options: ThrottleOptions, _octokit: unknown, retryCount: number) => {
+      onRateLimit: (
+        _retryAfter: number,
+        options: ThrottleOptions,
+        _octokit: unknown,
+        retryCount: number,
+      ) => {
         if (retryCount < 2) return true;
-        console.warn(`Rate limit hit on ${options.method} ${options.url}; giving up.`);
+        console.warn(
+          `Rate limit hit on ${options.method} ${options.url}; giving up.`,
+        );
         return false;
       },
       // Secondary (abuse) limits are the ones that bite during bulk writes.
-      onSecondaryRateLimit: (_retryAfter: number, options: ThrottleOptions, _octokit: unknown, retryCount: number) => {
+      onSecondaryRateLimit: (
+        _retryAfter: number,
+        options: ThrottleOptions,
+        _octokit: unknown,
+        retryCount: number,
+      ) => {
         if (retryCount < 3) return true;
-        console.warn(`Secondary rate limit on ${options.method} ${options.url}; giving up.`);
+        console.warn(
+          `Secondary rate limit on ${options.method} ${options.url}; giving up.`,
+        );
         return false;
       },
     },
@@ -79,8 +99,7 @@ export function createClient(token: string): GithubClient {
 let cached: { token: string; client: GithubClient } | null = null;
 
 /** Reuses one client per token so the throttling plugin can see the whole run. */
-export function github(): GithubClient {
-  const token = requireGithubToken();
+export function github(token: string): GithubClient {
   if (!cached || cached.token !== token) {
     cached = { token, client: createClient(token) };
   }
@@ -101,14 +120,20 @@ export interface GithubTestResult {
  * Classic PATs advertise their scopes in a response header; fine-grained tokens
  * do not, so we say so instead of pretending we verified them.
  */
-export async function testGithubToken(token: string): Promise<GithubTestResult> {
+export async function testGithubToken(
+  token: string,
+): Promise<GithubTestResult> {
   const client = createClient(token);
   const res = await client.rest.users.getAuthenticated();
   const scopeHeader = res.headers["x-oauth-scopes"];
   const fineGrained = scopeHeader === undefined;
-  const scopes = typeof scopeHeader === "string" && scopeHeader.length > 0
-    ? scopeHeader.split(",").map((s) => s.trim()).filter(Boolean)
-    : [];
+  const scopes =
+    typeof scopeHeader === "string" && scopeHeader.length > 0
+      ? scopeHeader
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
 
   const identity: GithubIdentity = {
     login: res.data.login,
@@ -134,7 +159,10 @@ export async function testGithubToken(token: string): Promise<GithubTestResult> 
 }
 
 /** Turns an Octokit error into something worth showing a human. */
-export function describeGithubError(err: unknown): { error: string; hint?: string } {
+export function describeGithubError(err: unknown): {
+  error: string;
+  hint?: string;
+} {
   const status = (err as { status?: number })?.status;
   const message = err instanceof Error ? err.message : String(err);
   if (status === 401) {
@@ -150,7 +178,10 @@ export function describeGithubError(err: unknown): { error: string; hint?: strin
     };
   }
   if (status === 404) {
-    return { error: "Not found (404).", hint: "The repo may be private, renamed, or deleted." };
+    return {
+      error: "Not found (404).",
+      hint: "The repo may be private, renamed, or deleted.",
+    };
   }
   return { error: message };
 }

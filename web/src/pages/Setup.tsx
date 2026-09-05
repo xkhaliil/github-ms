@@ -18,7 +18,6 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
   const [githubTest, setGithubTest] = useState<TestState>({ status: "idle" });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [permissionWarning, setPermissionWarning] = useState(false);
 
   // A key already in memory counts as verified; a newly typed one must be tested.
   const anthropicOk =
@@ -53,14 +52,12 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
       if (githubToken.trim()) payload.githubToken = githubToken.trim();
 
       const result = await saveCredentials(payload);
-      setPermissionWarning(remember && !result.permissionsRestricted);
-      // Clear the inputs: the values now live server-side and should not sit in the DOM.
+      // Clear the inputs: the values are held by the credential store now and
+      // should not sit in the DOM where a screenshot or extension can read them.
       setAnthropicKey("");
       setGithubToken("");
       await onSaved();
-      if (result.status.ready && !(remember && !result.permissionsRestricted)) {
-        navigate({ page: "dashboard" });
-      }
+      if (result.status.ready) navigate({ page: "dashboard" });
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -73,10 +70,10 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
       <header className="mb-9">
         <h1 className="text-[22px] font-semibold">Connect your accounts</h1>
         <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
-          Both keys stay on this machine. They are sent only to{" "}
+          Both keys stay in this browser. gitms has no server — the page calls{" "}
           <span className="font-mono text-[12.5px] text-text">api.anthropic.com</span> and{" "}
-          <span className="font-mono text-[12.5px] text-text">api.github.com</span>, never written
-          into the project folder, and never logged.
+          <span className="font-mono text-[12.5px] text-text">api.github.com</span> directly, so
+          your keys are never sent to us and there is nowhere for them to be logged.
         </p>
       </header>
 
@@ -182,16 +179,16 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
           <Switch
             checked={remember}
             onChange={setRemember}
-            label="Remember these keys on this machine"
-            description="Saves to ~/.gitms/credentials.json, protected by file permissions only — that is not encryption. Left off, they are held in memory until the server stops."
+            label="Remember these keys in this browser"
+            description="Keeps them in this site's local storage so they survive a reload — not encrypted, and readable by any script running on this page. Left off, they are cleared when you close the tab."
           />
         </div>
 
-        {permissionWarning && (
+        {remember && (
           <Banner tone="warn">
-            The credentials file was saved, but its permissions could not be locked down — any
-            program running as you can read it. Use Settings → Clear stored keys if that is not
-            acceptable.
+            Stored keys stay in this browser until you clear them. On a shared or public computer,
+            leave this off — and revoke the keys from Anthropic and GitHub if you ever suspect
+            they leaked. Settings → Clear stored keys removes them here.
           </Banner>
         )}
         {saveError && <Banner tone="error">{saveError}</Banner>}

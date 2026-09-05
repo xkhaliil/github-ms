@@ -1,0 +1,30 @@
+{
+  "name": "SpringBootCloudV2.0",
+  "status": "applied",
+  "description": "Microservices-based system combining Spring Boot services (gateway, service registry, user microservice, GMS main service) with an Angular front end",
+  "topics": [
+    "java",
+    "spring-boot",
+    "angular",
+    "microservices",
+    "spring-cloud",
+    "typescript"
+  ],
+  "confidence": "low",
+  "reasoning": "File tree shows multiple Spring Boot Maven modules (gateway, service-registry, UserMicroService, AngularGMS_SpringbootMainService) each with pom.xml, plus an Angular app (AngularFront-main) with package.json, karma.conf.js, and main.ts. No manifest contents were parsed, so exact Spring Cloud dependencies, versions, and specific service responsibilities are unconfirmed. Commit history is only 'Initial commit', giving no further context.",
+  "unknowns": [
+    "Exact Spring Boot/Spring Cloud dependencies used (e.g., Eureka, Zuul/Spring Cloud Gateway) since pom.xml contents weren't parsed",
+    "What UserMicroService and AngularGMS_SpringbootMainService actually manage functionally",
+    "Angular package.json dependencies and available npm scripts",
+    "Whether a license file exists anywhere in the repo",
+    "How the services communicate (REST, messaging, etc.)",
+    "Whether this is a learning/tutorial project or intended for production use"
+  ],
+  "generatedAt": "2026-09-05T16:31:47.329Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:57.995Z",
+    "readmeSha": "2904425c3289a63ed019dce62eb427b726bc3268",
+    "metadataUpdated": true
+  }
+}

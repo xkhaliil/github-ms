@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { auditAccount, auditRepo, prioritise } from "../server/analyze/hygiene.js";
+import { auditAccount, auditRepo, prioritise } from "../core/analyze/hygiene.js";
 import type { RepoSummary } from "../shared/types.js";
 
 function repo(overrides: Partial<RepoSummary> = {}): RepoSummary {

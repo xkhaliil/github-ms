@@ -1,0 +1,72 @@
+[
+  {
+    "name": "AngularGMS_SpringbootMainService",
+    "status": "applied",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:32:44.701Z"
+  },
+  {
+    "name": "AngularGMS-SpringbootUserMicroservice",
+    "status": "applied",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:32:56.541Z"
+  },
+  {
+    "name": "FinalDevApi",
+    "status": "applied",
+    "confidence": "medium",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:33:09.121Z"
+  },
+  {
+    "name": "flutterAttendanceApp",
+    "status": "applied",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:32:10.463Z"
+  },
+  {
+    "name": "FlutterFinalAttendanceApp",
+    "status": "applied",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:31:58.380Z"
+  },
+  {
+    "name": "flutterWithSpringboot",
+    "status": "applied",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:32:29.047Z"
+  },
+  {
+    "name": "JEE_Project",
+    "status": "applied",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:32:18.963Z"
+  },
+  {
+    "name": "SpringBootCloudV2.0",
+    "status": "applied",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:31:47.329Z"
+  },
+  {
+    "name": "SpringBootForFinalDev",
+    "status": "skipped",
+    "confidence": "low",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:33:17.644Z"
+  },
+  {
+    "name": "ThreeJsDaftPunk",
+    "status": "applied",
+    "confidence": "medium",
+    "hasReadmeProposal": true,
+    "generatedAt": "2026-09-05T16:33:29.847Z"
+  }
+]

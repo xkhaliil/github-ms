@@ -6,7 +6,12 @@ import {
   getTree,
   type RepoTree,
 } from "../github/repos.js";
-import { MANIFEST_FILES, parseManifest, type ParsedManifest } from "./manifests.js";
+import type { GithubClient } from "../github/client.js";
+import {
+  MANIFEST_FILES,
+  parseManifest,
+  type ParsedManifest,
+} from "./manifests.js";
 import type { RepoSummary } from "../../shared/types.js";
 
 /**
@@ -72,7 +77,10 @@ const ENTRY_PATTERNS = [
   /^cmd\/[^/]+\/main\.go$/i,
 ];
 
-export function trimTree(tree: RepoTree): { paths: string[]; truncated: boolean } {
+export function trimTree(tree: RepoTree): {
+  paths: string[];
+  truncated: boolean;
+} {
   const kept = tree.paths
     .filter((p) => !NOISE.some((n) => p.startsWith(n) || p.includes(`/${n}`)))
     .filter((p) => p.split("/").length <= MAX_TREE_DEPTH + 1)
@@ -85,26 +93,35 @@ export function trimTree(tree: RepoTree): { paths: string[]; truncated: boolean 
 
 export function pickEntrypoints(paths: string[]): string[] {
   const matched = paths.filter((p) => ENTRY_PATTERNS.some((re) => re.test(p)));
-  if (matched.length >= MAX_ENTRYPOINTS) return matched.slice(0, MAX_ENTRYPOINTS);
+  if (matched.length >= MAX_ENTRYPOINTS)
+    return matched.slice(0, MAX_ENTRYPOINTS);
 
   // Fall back to shallow source files - shallower paths are usually more central.
   const fallback = paths
-    .filter((p) => /\.(ts|tsx|js|jsx|py|go|rs|rb|java|php|c|cpp|cs|swift|kt)$/i.test(p))
+    .filter((p) =>
+      /\.(ts|tsx|js|jsx|py|go|rs|rb|java|php|c|cpp|cs|swift|kt)$/i.test(p),
+    )
     .filter((p) => !matched.includes(p))
-    .sort((a, b) => a.split("/").length - b.split("/").length || a.length - b.length);
+    .sort(
+      (a, b) =>
+        a.split("/").length - b.split("/").length || a.length - b.length,
+    );
 
   return [...matched, ...fallback].slice(0, MAX_ENTRYPOINTS);
 }
 
-export async function buildEvidence(repo: RepoSummary): Promise<Evidence> {
+export async function buildEvidence(
+  gh: GithubClient,
+  repo: RepoSummary,
+): Promise<Evidence> {
   const { owner, name } = repo;
-  const tree = await getTree(owner, name, repo.defaultBranch);
+  const tree = await getTree(gh, owner, name, repo.defaultBranch);
   const trimmed = trimTree(tree);
 
   const [languages, commitMessages, readme] = await Promise.all([
-    getLanguages(owner, name),
-    getCommitMessages(owner, name, 20),
-    getExistingReadme(owner, name),
+    getLanguages(gh, owner, name),
+    getCommitMessages(gh, owner, name, 20),
+    getExistingReadme(gh, owner, name),
   ]);
 
   // Only fetch manifests that the tree says exist - no speculative 404s.
@@ -112,7 +129,7 @@ export async function buildEvidence(repo: RepoSummary): Promise<Evidence> {
     (MANIFEST_FILES as readonly string[]).includes(p),
   );
   const manifestFiles = await Promise.all(
-    manifestPaths.map((p) => getFile(owner, name, p, 32_000)),
+    manifestPaths.map((p) => getFile(gh, owner, name, p, 32_000)),
   );
   const manifests = manifestFiles
     .map((f) => (f ? parseManifest(f.path, f.text) : null))
@@ -127,7 +144,7 @@ export async function buildEvidence(repo: RepoSummary): Promise<Evidence> {
   const entrypoints: { path: string; text: string }[] = [];
   for (const path of pickEntrypoints(trimmed.paths)) {
     if (budget <= MAX_ENTRYPOINT_BYTES) break;
-    const file = await getFile(owner, name, path, MAX_ENTRYPOINT_BYTES);
+    const file = await getFile(gh, owner, name, path, MAX_ENTRYPOINT_BYTES);
     if (!file) continue;
     entrypoints.push({ path: file.path, text: file.text });
     budget -= file.text.length;
@@ -167,7 +184,8 @@ export async function buildEvidence(repo: RepoSummary): Promise<Evidence> {
  * skipped and reported instead.
  */
 export function isTooThin(evidence: Evidence): boolean {
-  const hasCode = evidence.entrypoints.length > 0 || evidence.manifests.length > 0;
+  const hasCode =
+    evidence.entrypoints.length > 0 || evidence.manifests.length > 0;
   const hasFiles = evidence.tree.length > 2;
   return !hasCode && !hasFiles;
 }

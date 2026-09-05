@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isExpectedApiNoise } from "../server/github/client.js";
+import { isExpectedApiNoise } from "../core/github/client.js";
 
 /**
  * These strings are copied verbatim from a real scan of an undocumented account.

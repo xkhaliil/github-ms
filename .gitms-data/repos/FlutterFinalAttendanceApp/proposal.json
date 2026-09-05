@@ -1,0 +1,29 @@
+{
+  "name": "FlutterFinalAttendanceApp",
+  "status": "applied",
+  "description": "Flutter mobile app with a Java/Spring Boot backend for managing university attendance",
+  "topics": [
+    "flutter",
+    "dart",
+    "spring-boot",
+    "java",
+    "attendance",
+    "university"
+  ],
+  "confidence": "low",
+  "reasoning": "File tree shows a Flutter client (pubspec.yaml, lib/models, lib/pages, lib/services) and a separate Maven Java project 'university-management' (pom.xml, mvnw). No dependency manifests or entry-point source were readable, and only a single 'Initial commit' commit message exists, so actual attendance functionality is inferred only from folder/project naming.",
+  "unknowns": [
+    "Actual features and screens implemented in the Flutter client (lib/pages, lib/services contents unknown)",
+    "Whether the university-management backend is Spring Boot or another Java framework",
+    "API endpoints or communication method between client and backend",
+    "Presence of a database or other persistence layer",
+    "Whether a license file exists (none found in tree)"
+  ],
+  "generatedAt": "2026-09-05T16:31:58.380Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:46.870Z",
+    "readmeSha": "9c2458fe8c568687daeb4187529679e460d9dc18",
+    "metadataUpdated": true
+  }
+}

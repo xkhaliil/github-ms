@@ -1,5 +1,27 @@
-import { github } from "./client.js";
-import type { RepoFileFacts, RepoSummary, Settings } from "../../shared/types.js";
+import type { GithubClient } from "./client.js";
+import type {
+  RepoFileFacts,
+  RepoSummary,
+  Settings,
+} from "../../shared/types.js";
+
+/**
+ * Base64 in and out of the GitHub API without `Buffer`, which does not exist in
+ * the browser. GitHub wraps its base64 payloads at 60 columns, so the newlines
+ * have to go before `atob` sees them.
+ */
+export function decodeBase64(data: string): string {
+  const binary = atob(data.replace(/\s/g, ""));
+  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+  return new TextDecoder("utf-8").decode(bytes);
+}
+
+export function encodeBase64(text: string): string {
+  const bytes = new TextEncoder().encode(text);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
 
 /** Root-level files that tell us something without needing to be read. */
 const README_RE = /^readme(\.(md|markdown|rst|txt))?$/i;
@@ -26,9 +48,14 @@ export interface RepoTree {
  * One recursive tree call per repo. It answers the hygiene questions and doubles
  * as the file listing the evidence bundle needs, so we never pay for it twice.
  */
-export async function getTree(owner: string, repo: string, branch: string): Promise<RepoTree> {
+export async function getTree(
+  gh: GithubClient,
+  owner: string,
+  repo: string,
+  branch: string,
+): Promise<RepoTree> {
   try {
-    const res = await github().rest.git.getTree({
+    const res = await gh.rest.git.getTree({
       owner,
       repo,
       tree_sha: branch,
@@ -50,7 +77,8 @@ export function deriveFileFacts(tree: RepoTree): RepoFileFacts {
   const deployHints = DEPLOY_FILES.filter((f) =>
     root.some((p) => p.toLowerCase() === f.toLowerCase()),
   );
-  if (tree.paths.some((p) => p.startsWith("docs/") || p === "docs")) deployHints.push("docs/");
+  if (tree.paths.some((p) => p.startsWith("docs/") || p === "docs"))
+    deployHints.push("docs/");
 
   return {
     hasReadme: root.some((p) => README_RE.test(p)),
@@ -77,14 +105,18 @@ export function scanOptionsFrom(settings: Settings): ScanOptions {
 }
 
 /** Every repo owned by the authenticated user, before filtering. */
-export async function listOwnedRepos(): Promise<RepoSummary[]> {
-  const client = github();
-  const raw = await client.paginate(client.rest.repos.listForAuthenticatedUser, {
-    affiliation: "owner",
-    per_page: 100,
-    sort: "pushed",
-    direction: "desc",
-  });
+export async function listOwnedRepos(
+  client: GithubClient,
+): Promise<RepoSummary[]> {
+  const raw = await client.paginate(
+    client.rest.repos.listForAuthenticatedUser,
+    {
+      affiliation: "owner",
+      per_page: 100,
+      sort: "pushed",
+      direction: "desc",
+    },
+  );
 
   return raw.map((r) => ({
     name: r.name,
@@ -118,7 +150,10 @@ export async function listOwnedRepos(): Promise<RepoSummary[]> {
   }));
 }
 
-export function applyScanFilters(repos: RepoSummary[], opts: ScanOptions): RepoSummary[] {
+export function applyScanFilters(
+  repos: RepoSummary[],
+  opts: ScanOptions,
+): RepoSummary[] {
   return repos.filter((r) => {
     if (!opts.includeForks && r.isFork) return false;
     if (!opts.includeArchived && r.isArchived) return false;
@@ -137,17 +172,19 @@ export interface FileContent {
 
 /** Returns null for missing files, directories, and anything that is not text. */
 export async function getFile(
+  gh: GithubClient,
   owner: string,
   repo: string,
   path: string,
   maxBytes = 64 * 1024,
 ): Promise<FileContent | null> {
   try {
-    const res = await github().rest.repos.getContent({ owner, repo, path });
+    const res = await gh.rest.repos.getContent({ owner, repo, path });
     const data = res.data;
-    if (Array.isArray(data) || data.type !== "file" || !("content" in data)) return null;
+    if (Array.isArray(data) || data.type !== "file" || !("content" in data))
+      return null;
     if (data.size > maxBytes * 4) return null; // clearly a binary blob or a huge file
-    const text = Buffer.from(data.content, data.encoding as BufferEncoding).toString("utf8");
+    const text = decodeBase64(data.content);
     // A NUL byte in the first KB is the cheap, reliable binary test.
     if (text.slice(0, 1024).includes("\0")) return null;
     return { path, text: text.slice(0, maxBytes), sha: data.sha };
@@ -164,12 +201,13 @@ export interface ExistingReadme {
 
 /** Uses the dedicated endpoint so it finds README.md, README.rst, docs/README, etc. */
 export async function getExistingReadme(
+  gh: GithubClient,
   owner: string,
   repo: string,
 ): Promise<ExistingReadme | null> {
   try {
-    const res = await github().rest.repos.getReadme({ owner, repo });
-    const text = Buffer.from(res.data.content, res.data.encoding as BufferEncoding).toString("utf8");
+    const res = await gh.rest.repos.getReadme({ owner, repo });
+    const text = decodeBase64(res.data.content);
     return { path: res.data.path, text, sha: res.data.sha };
   } catch {
     return null;
@@ -177,21 +215,32 @@ export async function getExistingReadme(
 }
 
 export async function getCommitMessages(
+  gh: GithubClient,
   owner: string,
   repo: string,
   limit = 20,
 ): Promise<string[]> {
   try {
-    const res = await github().rest.repos.listCommits({ owner, repo, per_page: limit });
-    return res.data.map((c) => c.commit.message.split("\n")[0] ?? "").filter(Boolean);
+    const res = await gh.rest.repos.listCommits({
+      owner,
+      repo,
+      per_page: limit,
+    });
+    return res.data
+      .map((c) => c.commit.message.split("\n")[0] ?? "")
+      .filter(Boolean);
   } catch {
     return [];
   }
 }
 
-export async function getLanguages(owner: string, repo: string): Promise<Record<string, number>> {
+export async function getLanguages(
+  gh: GithubClient,
+  owner: string,
+  repo: string,
+): Promise<Record<string, number>> {
   try {
-    const res = await github().rest.repos.listLanguages({ owner, repo });
+    const res = await gh.rest.repos.listLanguages({ owner, repo });
     return res.data;
   } catch {
     return {};

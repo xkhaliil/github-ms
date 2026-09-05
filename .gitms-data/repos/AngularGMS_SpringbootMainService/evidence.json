@@ -1,0 +1,71 @@
+{
+  "repo": {
+    "name": "AngularGMS_SpringbootMainService",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2023-05-18T21:56:45Z",
+    "pushedAt": "2023-05-18T22:24:05Z",
+    "defaultBranch": "main",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "Java": 33394
+  },
+  "tree": [
+    "HELP.md",
+    "mvnw",
+    "mvnw.cmd",
+    "pom.xml",
+    "section345.iml",
+    "src",
+    "src/main",
+    "src/main/java",
+    "src/main/resources",
+    "src/test",
+    "src/test/java",
+    "target"
+  ],
+  "treeTruncated": false,
+  "manifests": [
+    {
+      "file": "pom.xml",
+      "ecosystem": "maven",
+      "dependencies": [
+        "spring-boot-starter-data-jpa",
+        "spring-boot-starter-security",
+        "thymeleaf-extras-springsecurity6",
+        "spring-boot-starter-web",
+        "spring-boot-starter-web-services",
+        "java-jwt",
+        "spring-boot-devtools",
+        "mysql-connector-j",
+        "spring-boot-starter-test",
+        "tomcat-embed-jasper",
+        "jakarta.servlet.jsp.jstl",
+        "jakarta.servlet.jsp.jstl-api",
+        "glassfish-jstl",
+        "bootstrap",
+        "spring-boot-starter-thymeleaf",
+        "spring-boot-starter-validation",
+        "thymeleaf-layout-dialect",
+        "jquery",
+        "spring-boot-starter-data-rest",
+        "lombok"
+      ],
+      "packageName": "spring-boot-starter-parent",
+      "description": "section345"
+    }
+  ],
+  "existingReadme": null,
+  "entrypoints": [],
+  "commitMessages": [
+    "commit final",
+    "Add files via upload"
+  ],
+  "bytes": 1208
+}

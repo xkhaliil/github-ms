@@ -1,0 +1,74 @@
+{
+  "repo": {
+    "name": "ThreeJsDaftPunk",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2026-05-02T17:38:27Z",
+    "pushedAt": "2026-05-03T19:16:39Z",
+    "defaultBranch": "main",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "JavaScript": 24348,
+    "HTML": 1721,
+    "CSS": 100
+  },
+  "tree": [
+    ".gitignore",
+    "index.html",
+    "package-lock.json",
+    "package.json",
+    "public",
+    "public/daft.glb",
+    "public/favicon.svg",
+    "public/icons.svg",
+    "public/music.mp3",
+    "src",
+    "src/App",
+    "src/App/index.js",
+    "src/assets",
+    "src/assets/hero.png",
+    "src/assets/javascript.svg",
+    "src/assets/vite.svg",
+    "src/main.js",
+    "src/style.css"
+  ],
+  "treeTruncated": false,
+  "manifests": [
+    {
+      "file": "package.json",
+      "ecosystem": "npm",
+      "dependencies": [
+        "lil-gui",
+        "stats.js",
+        "three",
+        "vite"
+      ],
+      "packageName": "daftpunk",
+      "version": "0.0.0",
+      "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+      }
+    }
+  ],
+  "existingReadme": null,
+  "entrypoints": [
+    {
+      "path": "src/main.js",
+      "text": "import './style.css';\nimport App from './App';\nconst app = new App();\n"
+    }
+  ],
+  "commitMessages": [
+    "feat: add lil-gui and stats.js for enhanced UI and performance monitoring; update package.json and package-lock.json",
+    "refactor: update HTML structure and enhance UI with play button; add audio initialization and visualizer features",
+    "first commit"
+  ],
+  "bytes": 1281
+}

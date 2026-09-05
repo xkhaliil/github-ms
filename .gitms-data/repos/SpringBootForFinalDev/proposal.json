@@ -1,0 +1,22 @@
+{
+  "name": "SpringBootForFinalDev",
+  "status": "skipped",
+  "description": "Java Maven project scaffolded with Spring Boot, purpose undetermined from available files",
+  "topics": [
+    "java",
+    "spring-boot",
+    "maven"
+  ],
+  "confidence": "low",
+  "reasoning": "File tree shows a Maven project (pom.xml, mvnw) under a 'games' directory with 100% Java by bytes, suggesting Spring Boot (inferred from repo name and mvnw wrapper), but no dependency manifest content or entry-point source could be parsed, and no README existed prior.",
+  "unknowns": [
+    "What the application actually does (no source files could be read)",
+    "Whether Spring Boot is actually a dependency (inferred only from repo name and mvnw wrapper)",
+    "Java version and Maven dependencies used",
+    "Whether this is a game, a web app, or something else despite the 'games' directory name",
+    "Build/run commands beyond generic Maven wrapper usage",
+    "Whether a license applies"
+  ],
+  "generatedAt": "2026-09-05T16:33:17.644Z",
+  "model": "claude-sonnet-5"
+}

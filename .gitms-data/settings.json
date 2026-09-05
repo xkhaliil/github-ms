@@ -1,0 +1,10 @@
+{
+  "model": "claude-sonnet-5",
+  "effort": "medium",
+  "batchMode": false,
+  "mockAi": false,
+  "includeForks": false,
+  "includeArchived": false,
+  "includePrivate": false,
+  "overwriteExistingReadme": false
+}

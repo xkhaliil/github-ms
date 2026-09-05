@@ -1,0 +1,82 @@
+{
+  "repo": {
+    "name": "FinalDevApi",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2022-12-11T12:42:55Z",
+    "pushedAt": "2022-12-11T12:52:59Z",
+    "defaultBranch": "main",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "HTML": 50149,
+    "TypeScript": 24257,
+    "CSS": 9806
+  },
+  "tree": [
+    "src",
+    "src/app",
+    "src/app/add-game",
+    "src/app/app-routing.module.ts",
+    "src/app/app.component.css",
+    "src/app/app.component.html",
+    "src/app/app.component.spec.ts",
+    "src/app/app.component.ts",
+    "src/app/app.module.ts",
+    "src/app/forbidden",
+    "src/app/game.guard.spec.ts",
+    "src/app/game.guard.ts",
+    "src/app/games",
+    "src/app/liste-genres",
+    "src/app/login",
+    "src/app/model",
+    "src/app/recherche-par-genre",
+    "src/app/recherche-par-nom",
+    "src/app/services",
+    "src/app/update-game",
+    "src/app/update-genre",
+    "src/environments",
+    "src/environments/environment.prod.ts",
+    "src/environments/environment.ts",
+    "src/favicon.ico",
+    "src/index.html",
+    "src/main.ts",
+    "src/polyfills.ts",
+    "src/styles.css",
+    "src/test.ts"
+  ],
+  "treeTruncated": false,
+  "manifests": [],
+  "existingReadme": null,
+  "entrypoints": [
+    {
+      "path": "src/main.ts",
+      "text": "import { enableProdMode } from '@angular/core';\nimport { platformBrowserDynamic } from '@angular/platform-browser-dynamic';\n\nimport { AppModule } from './app/app.module';\nimport { environment } from './environments/environment';\n\nif (environment.production) {\n  enableProdMode();\n}\n\nplatformBrowserDynamic().bootstrapModule(AppModule)\n  .catch(err => console.error(err));\n"
+    },
+    {
+      "path": "src/test.ts",
+      "text": "// This file is required by karma.conf.js and loads recursively all the .spec and framework files\n\nimport 'zone.js/testing';\nimport { getTestBed } from '@angular/core/testing';\nimport {\n  BrowserDynamicTestingModule,\n  platformBrowserDynamicTesting\n} from '@angular/platform-browser-dynamic/testing';\n\ndeclare const require: {\n  context(path: string, deep?: boolean, filter?: RegExp): {\n    <T>(id: string): T;\n    keys(): string[];\n  };\n};\n\n// First, initialize the Angular testing environment.\ngetTestBed().initTestEnvironment(\n  BrowserDynamicTestingModule,\n  platformBrowserDynamicTesting(),\n);\n\n// Then we find all the tests.\nconst context = require.context('./', true, /\\.spec\\.ts$/);\n// And load the modules.\ncontext.keys().map(context);\n"
+    },
+    {
+      "path": "src/polyfills.ts",
+      "text": "/**\n * This file includes polyfills needed by Angular and is loaded before the app.\n * You can add your own extra polyfills to this file.\n *\n * This file is divided into 2 sections:\n *   1. Browser polyfills. These are applied before loading ZoneJS and are sorted by browsers.\n *   2. Application imports. Files imported after ZoneJS that should be loaded before your main\n *      file.\n *\n * The current setup is for so-called \"evergreen\" browsers; the last versions of browsers that\n * automatically update themselves. This includes recent versions of Safari, Chrome (including\n * Opera), Edge on the desktop, and iOS and Chrome on mobile.\n *\n * Learn more in https://angular.io/guide/browser-support\n */\n\n/***************************************************************************************************\n * BROWSER POLYFILLS\n */\n\n/**\n * By default, zone.js will patch all possible macroTask and DomEvents\n * user can disable parts of macroTask/DomEvents patch by setting following flags\n * because those flags need to be set before `zone.js` being loaded, and webpack\n * will put import in the top of bundle, so user need to create a separate file\n * in this directory (for example: zone-flags.ts), and put the following flags\n * into that file, and then add the following code before importing zone.js.\n * import './zone-flags';\n *\n * The flags allowed in zone-flags.ts are listed here.\n *\n * The following flags will work for all browsers.\n *\n * (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame\n * (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick\n * (window as any).__zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames\n *\n *  in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js\n *  with the following flag, it will bypass `zone.js` patch for IE/Edge\n *\n *  (window as any).__Zone_enable_cross_context_check = true;\n *\n */\n\n/***************************************************************************************************\n * Zone JS is required by default for Angular itself.\n */\nimport 'zone.js';  // Included with Angular CLI.\n\n\n/***************************************************************************************************\n * APPLICATION IMPORTS\n */\n"
+    },
+    {
+      "path": "src/app/app.module.ts",
+      "text": "import { NgModule } from '@angular/core';\nimport { BrowserModule } from '@angular/platform-browser';\nimport { HttpClientModule } from '@angular/common/http';\nimport { AppRoutingModule } from './app-routing.module';\nimport { AppComponent } from './app.component';\nimport { GamesComponent } from './games/games.component';\nimport { AddGameComponent } from './add-game/add-game.component';\nimport { FormsModule } from '@angular/forms';\nimport { UpdateGameComponent } from './update-game/update-game.component';\nimport { LoginComponent } from './login/login.component';\nimport { ForbiddenComponent } from './forbidden/forbidden.component';\nimport { RechercheParGenreComponent } from './recherche-par-genre/recherche-par-genre.component';\nimport { RechercheParNomComponent } from './recherche-par-nom/recherche-par-nom.component';\nimport { ListeGenresComponent } from './liste-genres/liste-genres.component';\nimport { UpdateGenreComponent } from './update-genre/update-genre.component';\n\n@NgModule({\n  declarations: [\n    AppComponent,\n    GamesComponent,\n    AddGameComponent,\n    UpdateGameComponent,\n    LoginComponent,\n    ForbiddenComponent,\n    RechercheParGenreComponent,\n    RechercheParNomComponent,\n    ListeGenresComponent,\n    UpdateGenreComponent\n  ],\n  imports: [\n    BrowserModule,\n    AppRoutingModule,\n    FormsModule,\n    HttpClientModule\n\n  ],\n  providers: [],\n  bootstrap: [AppComponent]\n})\nexport class AppModule { }\n"
+    },
+    {
+      "path": "src/app/game.guard.ts",
+      "text": "import { Injectable } from '@angular/core';\nimport { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';\nimport { Observable } from 'rxjs';\nimport { AuthService } from './services/auth.service';\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class GameGuard implements CanActivate {\n  constructor (private authService: AuthService,\n    private router : Router) {}\n  canActivate(\n    route: ActivatedRouteSnapshot,\n    state: RouterStateSnapshot): boolean {\n    if (this.authService.isAdmin())\n    return true;\n    else\n    {\n    this.router.navigate(['forbidden']);\n    return false;\n    }\n  }\n  \n}\n"
+    }
+  ],
+  "commitMessages": [
+    "Add files via upload"
+  ],
+  "bytes": 6988
+}

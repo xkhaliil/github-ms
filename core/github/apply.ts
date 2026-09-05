@@ -1,5 +1,5 @@
-import { github } from "./client.js";
-import { getExistingReadme } from "./repos.js";
+import type { GithubClient } from "./client.js";
+import { encodeBase64, getExistingReadme } from "./repos.js";
 
 /**
  * Every write to GitHub goes through this module. Keeping them in one place means
@@ -13,11 +13,12 @@ export interface MetadataUpdate {
 }
 
 export async function updateMetadata(
+  gh: GithubClient,
   owner: string,
   repo: string,
   update: MetadataUpdate,
 ): Promise<void> {
-  await github().rest.repos.update({ owner, repo, ...update });
+  await gh.rest.repos.update({ owner, repo, ...update });
 }
 
 /**
@@ -25,11 +26,16 @@ export async function updateMetadata(
  * of existing and new topics if they want to keep the old ones.
  */
 export async function replaceTopics(
+  gh: GithubClient,
   owner: string,
   repo: string,
   topics: string[],
 ): Promise<string[]> {
-  const res = await github().rest.repos.replaceAllTopics({ owner, repo, names: topics });
+  const res = await gh.rest.repos.replaceAllTopics({
+    owner,
+    repo,
+    names: topics,
+  });
   return res.data.names;
 }
 
@@ -48,13 +54,14 @@ export interface ReadmeWriteResult {
  * instead of silently overwriting their work. There is no force path.
  */
 export async function commitReadme(
+  gh: GithubClient,
   owner: string,
   repo: string,
   content: string,
   branch: string,
   existingSha: string | null,
 ): Promise<ReadmeWriteResult> {
-  const res = await github().rest.repos.createOrUpdateFileContents({
+  const res = await gh.rest.repos.createOrUpdateFileContents({
     owner,
     repo,
     path: "README.md",
@@ -62,7 +69,7 @@ export async function commitReadme(
     message: existingSha
       ? "docs: update README\n\nGenerated with gitms and reviewed before commit."
       : "docs: add README\n\nGenerated with gitms and reviewed before commit.",
-    content: Buffer.from(content, "utf8").toString("base64"),
+    content: encodeBase64(content),
     ...(existingSha ? { sha: existingSha } : {}),
   });
 
@@ -77,8 +84,12 @@ export async function commitReadme(
  * Reads the current README so we can pass its sha and keep a backup. Returns null
  * when there is none, which is the create-not-update case.
  */
-export async function currentReadme(owner: string, repo: string) {
-  const readme = await getExistingReadme(owner, repo);
+export async function currentReadme(
+  gh: GithubClient,
+  owner: string,
+  repo: string,
+) {
+  const readme = await getExistingReadme(gh, owner, repo);
   // Only README.md at the repo root can be updated in place; anything else
   // (README.rst, docs/README.md) would be a new file alongside it.
   if (readme && readme.path !== "README.md") {

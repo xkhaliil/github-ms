@@ -1,5 +1,5 @@
 /**
- * The wire contract between the Fastify API and the React UI.
+ * The shared vocabulary between the core engine and the React UI.
  * Both sides import from here so a shape change breaks the typecheck, not runtime.
  */
 

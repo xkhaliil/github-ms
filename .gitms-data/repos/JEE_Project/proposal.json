@@ -1,0 +1,26 @@
+{
+  "name": "JEE_Project",
+  "status": "applied",
+  "description": "Java EE web application project scaffolded with Eclipse WTP tooling",
+  "topics": [
+    "java",
+    "java-ee",
+    "eclipse",
+    "webapp"
+  ],
+  "confidence": "low",
+  "reasoning": "File tree shows Eclipse WTP/JEE project structure (.classpath, .project, .settings with WTP facet files, src/main/java, src/main/webapp) and language is 100% Java, but no entry-point source files could be read and no dependency manifest (pom.xml, build.gradle) was found, so actual application behavior is unknown. Only commit message 'JEE project' confirms intent.",
+  "unknowns": [
+    "What the application actually does (no source files were readable)",
+    "Whether it uses Maven/Gradle or plain Eclipse build (no manifest found)",
+    "Any frameworks used within the JEE stack (Servlets, JSP, EJB, etc.)",
+    "Whether there is a license"
+  ],
+  "generatedAt": "2026-09-05T16:32:18.963Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:54.049Z",
+    "readmeSha": "8c9dbf33feb876aed9b61b2c37f0db1f2edfc66c",
+    "metadataUpdated": true
+  }
+}

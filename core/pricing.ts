@@ -1,4 +1,4 @@
-import type { ModelId, UsageTotals } from "../../shared/types.js";
+import type { ModelId, UsageTotals } from "../shared/types.js";
 
 /**
  * USD per million tokens. Cache multipliers follow Anthropic's standard rates:
@@ -19,7 +19,11 @@ export function emptyUsage(): UsageTotals {
   };
 }
 
-export function costOf(usage: Omit<UsageTotals, "estimatedCostUsd">, model: ModelId, batch: boolean): number {
+export function costOf(
+  usage: Omit<UsageTotals, "estimatedCostUsd">,
+  model: ModelId,
+  batch: boolean,
+): number {
   const rate = RATES[model];
   const perMillion =
     usage.inputTokens * rate.input +
@@ -35,9 +39,18 @@ export function costOf(usage: Omit<UsageTotals, "estimatedCostUsd">, model: Mode
  * of a repo request: a large cached system prefix plus ~20K of evidence in,
  * ~3K of README out.
  */
-export function estimateRun(repoCount: number, model: ModelId, batch: boolean): number {
+export function estimateRun(
+  repoCount: number,
+  model: ModelId,
+  batch: boolean,
+): number {
   const per = costOf(
-    { inputTokens: 18_000, outputTokens: 3_000, cacheReadTokens: 2_000, cacheWriteTokens: 0 },
+    {
+      inputTokens: 18_000,
+      outputTokens: 3_000,
+      cacheReadTokens: 2_000,
+      cacheWriteTokens: 0,
+    },
     model,
     batch,
   );

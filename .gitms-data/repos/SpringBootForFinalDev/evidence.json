@@ -1,0 +1,38 @@
+{
+  "repo": {
+    "name": "SpringBootForFinalDev",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2022-12-08T20:16:57Z",
+    "pushedAt": "2022-12-08T20:18:35Z",
+    "defaultBranch": "main",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "Java": 12582
+  },
+  "tree": [
+    "games",
+    "games/HELP.md",
+    "games/mvnw",
+    "games/mvnw.cmd",
+    "games/pom.xml",
+    "games/src",
+    "games/src/main",
+    "games/src/test",
+    "games/target"
+  ],
+  "treeTruncated": false,
+  "manifests": [],
+  "existingReadme": null,
+  "entrypoints": [],
+  "commitMessages": [
+    "Add files via upload"
+  ],
+  "bytes": 553
+}

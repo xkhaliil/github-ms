@@ -1,13 +1,22 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { AnthropicIdentity, ModelId } from "../../shared/types.js";
-import { requireAnthropicKey } from "../session.js";
+
+/**
+ * The key belongs to whoever is sitting in front of the browser, and it is sent
+ * straight to Anthropic over TLS - it is never posted to a gitms server, because
+ * there isn't one. `dangerouslyAllowBrowser` is named for the usual case of
+ * shipping a developer's own key inside an app; here the user supplies their own,
+ * so calling Anthropic directly is what keeps the key from touching a third party.
+ */
+function newClient(key: string): Anthropic {
+  return new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
+}
 
 let cached: { key: string; client: Anthropic } | null = null;
 
-export function anthropic(): Anthropic {
-  const key = requireAnthropicKey();
+export function anthropic(key: string): Anthropic {
   if (!cached || cached.key !== key) {
-    cached = { key, client: new Anthropic({ apiKey: key }) };
+    cached = { key, client: newClient(key) };
   }
   return cached.client;
 }
@@ -29,7 +38,7 @@ export async function testAnthropicKey(
   key: string,
   desiredModel: ModelId,
 ): Promise<AnthropicTestResult> {
-  const client = new Anthropic({ apiKey: key });
+  const client = newClient(key);
   const page = await client.models.list({ limit: 100 });
   const ids = page.data.map((m) => m.id);
   const identity: AnthropicIdentity = { model: desiredModel };
@@ -45,7 +54,10 @@ export async function testAnthropicKey(
   return { identity };
 }
 
-export function describeAnthropicError(err: unknown): { error: string; hint?: string } {
+export function describeAnthropicError(err: unknown): {
+  error: string;
+  hint?: string;
+} {
   const status = (err as { status?: number })?.status;
   const message = err instanceof Error ? err.message : String(err);
   if (status === 401) {
@@ -64,7 +76,9 @@ export function describeAnthropicError(err: unknown): { error: string; hint?: st
     };
   }
   if (typeof status === "number" && status >= 500) {
-    return { error: `Anthropic API error (${status}). This is usually transient - retry.` };
+    return {
+      error: `Anthropic API error (${status}). This is usually transient - retry.`,
+    };
   }
   return { error: message };
 }

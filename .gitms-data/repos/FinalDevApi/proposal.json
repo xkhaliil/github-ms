@@ -1,0 +1,27 @@
+{
+  "name": "FinalDevApi",
+  "status": "applied",
+  "description": "Angular front-end for managing a video game catalog with login, genre search, and admin-guarded CRUD views",
+  "topics": [
+    "angular",
+    "typescript",
+    "frontend",
+    "video-games",
+    "crud"
+  ],
+  "confidence": "medium",
+  "reasoning": "Based on file tree structure typical of Angular CLI apps, app.module.ts imports/declarations revealing feature components (games, genres, login, guard), and game.guard.ts showing role-based route protection via AuthService.isAdmin(). No dependency manifest (package.json) was included in evidence, so tech stack details and run commands are inferred from imports only.",
+  "unknowns": [
+    "Exact Angular version and full dependency list (no package.json provided)",
+    "Backend API this front-end communicates with",
+    "Install and run commands (ng serve/ng build) since no manifest scripts were available",
+    "Whether a license applies to this project"
+  ],
+  "generatedAt": "2026-09-05T16:33:09.121Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:38.777Z",
+    "readmeSha": "9c594d208fd225e6d8719b59efe67c082bbebb89",
+    "metadataUpdated": true
+  }
+}

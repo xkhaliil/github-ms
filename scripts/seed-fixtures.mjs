@@ -1,13 +1,13 @@
 /**
- * Writes realistic fixture data into .gitms-data/ so every screen can be
- * rendered and reviewed without touching a real GitHub account.
+ * Realistic fixture data so every screen can be rendered and reviewed without
+ * touching a real GitHub account.
+ *
+ * The app stores its data in the browser now, so this module only builds the
+ * fixtures and exports them; `shoot.mjs` injects them into the page's IndexedDB.
+ * Run directly (`npm run qa:seed`) to print what would be seeded.
  *
  * Development tool only - it never runs as part of the app.
  */
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
-
-const DATA = path.resolve(import.meta.dirname, "..", ".gitms-data");
 
 const files = (over = {}) => ({
   hasReadme: false,
@@ -131,19 +131,9 @@ const full = repos.map((r) => ({
 const scannedAt = new Date().toISOString();
 
 // Reuse the real auditor so the fixture scores are the ones the app computes.
-const { auditAccount } = await import("../server/analyze/hygiene.ts");
+const { auditAccount } = await import("../core/analyze/hygiene.ts");
 
-await mkdir(path.join(DATA, "repos", "raycast-timezones"), { recursive: true });
-await writeFile(
-  path.join(DATA, "inventory.json"),
-  JSON.stringify({ scannedAt, owner: "wassim", repos: full }, null, 2),
-);
-await writeFile(
-  path.join(DATA, "audit.json"),
-  JSON.stringify(auditAccount("wassim", full, scannedAt), null, 2),
-);
-
-const proposal = {
+const proposalMeta = {
   name: "raycast-timezones",
   status: "pending",
   description: "Raycast extension that shows the current time for a saved list of teammates",
@@ -193,58 +183,60 @@ npm run dev
 No license file is present yet.
 `;
 
-await writeFile(
-  path.join(DATA, "repos", "raycast-timezones", "proposal.json"),
-  JSON.stringify(proposal, null, 2),
-);
-await writeFile(path.join(DATA, "repos", "raycast-timezones", "README.md"), readme);
-await writeFile(
-  path.join(DATA, "repos", "raycast-timezones", "evidence.json"),
-  JSON.stringify(
+const evidence = {
+  repo: { name: "raycast-timezones", owner: "wassim" },
+  languages: { TypeScript: 18400, CSS: 900 },
+  tree: [
+    "package.json",
+    "tsconfig.json",
+    "assets/icon.png",
+    "src/index.tsx",
+    "src/storage.ts",
+    "src/types.ts",
+  ],
+  treeTruncated: false,
+  manifests: [
     {
-      repo: { name: "raycast-timezones", owner: "wassim" },
-      languages: { TypeScript: 18400, CSS: 900 },
-      tree: [
-        "package.json",
-        "tsconfig.json",
-        "assets/icon.png",
-        "src/index.tsx",
-        "src/storage.ts",
-        "src/types.ts",
-      ],
-      treeTruncated: false,
-      manifests: [
-        {
-          file: "package.json",
-          ecosystem: "npm",
-          dependencies: ["@raycast/api", "react", "typescript", "@types/react", "eslint"],
-        },
-      ],
-      existingReadme: null,
-      entrypoints: [
-        {
-          path: "src/index.tsx",
-          text:
-            'import { List, LocalStorage } from "@raycast/api";\n' +
-            'import { useEffect, useState } from "react";\n\n' +
-            "export default function Command() {\n" +
-            "  const [people, setPeople] = useState<Person[]>([]);\n" +
-            "  useEffect(() => { void load().then(setPeople); }, []);\n" +
-            "  return (\n    <List>\n      {people.map((p) => (\n" +
-            "        <List.Item key={p.id} title={p.name} accessories={[{ text: localTime(p.tz) }]} />\n" +
-            "      ))}\n    </List>\n  );\n}\n",
-        },
-      ],
-      commitMessages: [
-        "add timezone picker to the add-person form",
-        "persist people through LocalStorage",
-        "initial commit",
-      ],
-      bytes: 14_820,
+      file: "package.json",
+      ecosystem: "npm",
+      dependencies: ["@raycast/api", "react", "typescript", "@types/react", "eslint"],
     },
-    null,
-    2,
-  ),
-);
+  ],
+  existingReadme: null,
+  entrypoints: [
+    {
+      path: "src/index.tsx",
+      text:
+        'import { List, LocalStorage } from "@raycast/api";\n' +
+        'import { useEffect, useState } from "react";\n\n' +
+        "export default function Command() {\n" +
+        "  const [people, setPeople] = useState<Person[]>([]);\n" +
+        "  useEffect(() => { void load().then(setPeople); }, []);\n" +
+        "  return (\n    <List>\n      {people.map((p) => (\n" +
+        "        <List.Item key={p.id} title={p.name} accessories={[{ text: localTime(p.tz) }]} />\n" +
+        "      ))}\n    </List>\n  );\n}\n",
+    },
+  ],
+  commitMessages: [
+    "add timezone picker to the add-person form",
+    "persist people through LocalStorage",
+    "initial commit",
+  ],
+  bytes: 14_820,
+};
 
-console.log("seeded fixtures for", full.length, "repos");
+/** Everything the page needs, in the shape the browser store writes. */
+export const fixtures = {
+  inventory: { scannedAt, owner: "wassim", repos: full },
+  audit: auditAccount("wassim", full, scannedAt),
+  proposals: [{ ...proposalMeta, readme }],
+  evidence: { "raycast-timezones": evidence },
+};
+
+// Running this file directly is a dry check that the fixtures still build.
+if (import.meta.filename === process.argv[1]) {
+  console.log(
+    `fixtures ready: ${full.length} repos, ${fixtures.proposals.length} proposal(s).`,
+    "\nRun `npm run qa:shoot` to load them into a browser and screenshot every screen.",
+  );
+}

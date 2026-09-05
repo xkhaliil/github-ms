@@ -1,0 +1,1806 @@
+{
+  "scannedAt": "2026-09-05T16:37:36.070Z",
+  "owner": "xkhaliil",
+  "totals": {
+    "repos": 57,
+    "missingDescription": 29,
+    "missingTopics": 46,
+    "missingReadme": 5,
+    "missingLicense": 56,
+    "stale": 26
+  },
+  "averageScore": 57,
+  "repos": [
+    {
+      "name": "sampleapp",
+      "score": 30,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.8 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "near-empty",
+          "severity": "medium",
+          "title": "Almost no content",
+          "fix": "Consider deleting or making it private - empty repos dilute the profile.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "Symfony",
+      "score": 32,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-homepage",
+          "severity": "medium",
+          "title": "Deployable but no homepage link",
+          "fix": "Found docker-compose.yml - add the live URL to the repo's homepage field.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.3 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "SpringBootCloud",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-readme",
+          "severity": "high",
+          "title": "No README",
+          "fix": "Generate a README from the actual code and dependencies.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.8 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "fluttertp",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.8 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "UserMicroService",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.9 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "AngularFront",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.9 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "AngularFrontVGMS",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.9 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "PharmacyManagementSystem",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.3 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "SpringBootMicroService",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.4 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "TP6JEE",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.5 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "TP5JEE",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.5 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "PersonalPortfolio_Django",
+      "score": 40,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.5 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "DocPatient",
+      "score": 42,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-homepage",
+          "severity": "medium",
+          "title": "Deployable but no homepage link",
+          "fix": "Found vercel.json - add the live URL to the repo's homepage field.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "AdminPanelForRentHub",
+      "score": 42,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-readme",
+          "severity": "high",
+          "title": "No README",
+          "fix": "Generate a README from the actual code and dependencies.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.7 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "RentHub",
+      "score": 42,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-readme",
+          "severity": "high",
+          "title": "No README",
+          "fix": "Generate a README from the actual code and dependencies.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.7 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "BubblesWelcomeScreen",
+      "score": 42,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.8 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "JavaHospitalMangementSystem",
+      "score": 42,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-readme",
+          "severity": "high",
+          "title": "No README",
+          "fix": "Generate a README from the actual code and dependencies.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.3 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "video_games_management_system_WithSpringboot",
+      "score": 42,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-readme",
+          "severity": "high",
+          "title": "No README",
+          "fix": "Generate a README from the actual code and dependencies.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.4 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "BCA3",
+      "score": 45,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "Tbib.tn",
+      "score": 45,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.2 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "MedAlphaTesting",
+      "score": 45,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.5 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "starharbour-workflow",
+      "score": 47,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "jomhour",
+      "score": 47,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "starbourfront",
+      "score": 47,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "cue-project",
+      "score": 47,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "m-ltaief-pp",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "ReactNativePersonalProject",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "ReactNativeCourseProject",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "RainyCreepThreeJS",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "SolarSystemThreeJS",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "elden-ring-next-js",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "elden-ring-vue-js",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "fef-vue-js",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "CourseProjectReactWeb",
+      "score": 50,
+      "issues": [
+        {
+          "code": "missing-description",
+          "severity": "high",
+          "title": "No description",
+          "fix": "Generate a one-line description from the code.",
+          "automatable": true
+        },
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "AngularGMS",
+      "score": 65,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.3 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "JumiaWebScrapingDjango",
+      "score": 65,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.3 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "RentApp-NextJs",
+      "score": 67,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 2.9 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "VGMSWithLogin",
+      "score": 67,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.3 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "WPCP",
+      "score": 70,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "WPPP",
+      "score": 70,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "OlaDoc",
+      "score": 70,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "Wabaytech",
+      "score": 70,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 1.4 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "PracticalChallenge",
+      "score": 70,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 1.8 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "fef-react",
+      "score": 75,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "Dareo",
+      "score": 75,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "SchoolClient",
+      "score": 80,
+      "issues": [
+        {
+          "code": "missing-topics",
+          "severity": "high",
+          "title": "No topics",
+          "fix": "Add 3-6 topics so the repo is discoverable.",
+          "automatable": true
+        },
+        {
+          "code": "stale",
+          "severity": "low",
+          "title": "No commits in 3.5 years",
+          "fix": "Still worth a README, or archive it to signal it is finished.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "SpringBootCloudV2.0",
+      "score": 82,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "JEE_Project",
+      "score": 82,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "FlutterFinalAttendanceApp",
+      "score": 82,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "flutterAttendanceApp",
+      "score": 82,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        },
+        {
+          "code": "legacy-default-branch",
+          "severity": "low",
+          "title": "Default branch is `master`",
+          "fix": "Rename to `main` in repo settings.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "flutterWithSpringboot",
+      "score": 85,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "FinalDevApi",
+      "score": 85,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "AngularGMS_SpringbootMainService",
+      "score": 85,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "AngularGMS-SpringbootUserMicroservice",
+      "score": 85,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "xkhaliil",
+      "score": 85,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        },
+        {
+          "code": "missing-gitignore",
+          "severity": "low",
+          "title": "No .gitignore",
+          "fix": "Add one for the project's language.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "ThreeJsDaftPunk",
+      "score": 90,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    },
+    {
+      "name": "spanish-visa-status-monitor",
+      "score": 90,
+      "issues": [
+        {
+          "code": "missing-license",
+          "severity": "medium",
+          "title": "No license",
+          "fix": "Add a LICENSE file - without one, nobody may legally reuse the code.",
+          "automatable": false
+        }
+      ]
+    }
+  ]
+}

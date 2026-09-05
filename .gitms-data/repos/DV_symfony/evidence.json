@@ -1,0 +1,161 @@
+{
+  "repo": {
+    "name": "DV_symfony",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2023-05-25T09:23:18Z",
+    "pushedAt": "2023-05-25T09:23:38Z",
+    "defaultBranch": "master",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "PHP": 2831,
+    "Twig": 693
+  },
+  "tree": [
+    ".env",
+    ".env.test",
+    ".gitignore",
+    "bin",
+    "bin/console",
+    "bin/phpunit",
+    "composer.json",
+    "composer.lock",
+    "config",
+    "config/bundles.php",
+    "config/packages",
+    "config/packages/cache.yaml",
+    "config/packages/debug.yaml",
+    "config/packages/doctrine.yaml",
+    "config/packages/doctrine_migrations.yaml",
+    "config/packages/framework.yaml",
+    "config/packages/mailer.yaml",
+    "config/packages/messenger.yaml",
+    "config/packages/monolog.yaml",
+    "config/packages/notifier.yaml",
+    "config/packages/routing.yaml",
+    "config/packages/security.yaml",
+    "config/packages/translation.yaml",
+    "config/packages/twig.yaml",
+    "config/packages/validator.yaml",
+    "config/packages/web_profiler.yaml",
+    "config/preload.php",
+    "config/routes",
+    "config/routes.yaml",
+    "config/routes/framework.yaml",
+    "config/routes/web_profiler.yaml",
+    "config/services.yaml",
+    "docker-compose.override.yml",
+    "docker-compose.yml",
+    "migrations",
+    "migrations/.gitignore",
+    "phpunit.xml.dist",
+    "public",
+    "public/index.php",
+    "src",
+    "src/Controller",
+    "src/Controller/.gitignore",
+    "src/Entity",
+    "src/Entity/.gitignore",
+    "src/Kernel.php",
+    "src/Repository",
+    "src/Repository/.gitignore",
+    "symfony.lock",
+    "templates",
+    "templates/base.html.twig",
+    "tests",
+    "tests/bootstrap.php",
+    "translations",
+    "translations/.gitignore"
+  ],
+  "treeTruncated": false,
+  "manifests": [
+    {
+      "file": "composer.json",
+      "ecosystem": "composer",
+      "dependencies": [
+        "php",
+        "ext-ctype",
+        "ext-iconv",
+        "doctrine/annotations",
+        "doctrine/doctrine-bundle",
+        "doctrine/doctrine-migrations-bundle",
+        "doctrine/orm",
+        "phpdocumentor/reflection-docblock",
+        "phpstan/phpdoc-parser",
+        "symfony/asset",
+        "symfony/console",
+        "symfony/doctrine-messenger",
+        "symfony/dotenv",
+        "symfony/expression-language",
+        "symfony/flex",
+        "symfony/form",
+        "symfony/framework-bundle",
+        "symfony/http-client",
+        "symfony/intl",
+        "symfony/mailer",
+        "symfony/mime",
+        "symfony/monolog-bundle",
+        "symfony/notifier",
+        "symfony/process",
+        "symfony/property-access",
+        "symfony/property-info",
+        "symfony/runtime",
+        "symfony/security-bundle",
+        "symfony/serializer",
+        "symfony/string",
+        "symfony/translation",
+        "symfony/twig-bundle",
+        "symfony/validator",
+        "symfony/web-link",
+        "symfony/yaml",
+        "twig/extra-bundle",
+        "twig/twig"
+      ],
+      "scripts": {
+        "auto-scripts": {
+          "cache:clear": "symfony-cmd",
+          "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+          "@auto-scripts"
+        ],
+        "post-update-cmd": [
+          "@auto-scripts"
+        ]
+      }
+    }
+  ],
+  "existingReadme": null,
+  "entrypoints": [
+    {
+      "path": "src/Kernel.php",
+      "text": "<?php\n\nnamespace App;\n\nuse Symfony\\Bundle\\FrameworkBundle\\Kernel\\MicroKernelTrait;\nuse Symfony\\Component\\HttpKernel\\Kernel as BaseKernel;\n\nclass Kernel extends BaseKernel\n{\n    use MicroKernelTrait;\n}\n"
+    },
+    {
+      "path": "public/index.php",
+      "text": "<?php\n\nuse App\\Kernel;\n\nrequire_once dirname(__DIR__).'/vendor/autoload_runtime.php';\n\nreturn function (array $context) {\n    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);\n};\n"
+    },
+    {
+      "path": "config/bundles.php",
+      "text": "<?php\n\nreturn [\n    Symfony\\Bundle\\FrameworkBundle\\FrameworkBundle::class => ['all' => true],\n    Doctrine\\Bundle\\DoctrineBundle\\DoctrineBundle::class => ['all' => true],\n    Doctrine\\Bundle\\MigrationsBundle\\DoctrineMigrationsBundle::class => ['all' => true],\n    Symfony\\Bundle\\DebugBundle\\DebugBundle::class => ['dev' => true],\n    Symfony\\Bundle\\TwigBundle\\TwigBundle::class => ['all' => true],\n    Symfony\\Bundle\\WebProfilerBundle\\WebProfilerBundle::class => ['dev' => true, 'test' => true],\n    Twig\\Extra\\TwigExtraBundle\\TwigExtraBundle::class => ['all' => true],\n    Symfony\\Bundle\\SecurityBundle\\SecurityBundle::class => ['all' => true],\n    Symfony\\Bundle\\MonologBundle\\MonologBundle::class => ['all' => true],\n    Symfony\\Bundle\\MakerBundle\\MakerBundle::class => ['dev' => true],\n];\n"
+    },
+    {
+      "path": "config/preload.php",
+      "text": "<?php\n\nif (file_exists(dirname(__DIR__).'/var/cache/prod/App_KernelProdContainer.preload.php')) {\n    require dirname(__DIR__).'/var/cache/prod/App_KernelProdContainer.preload.php';\n}\n"
+    },
+    {
+      "path": "tests/bootstrap.php",
+      "text": "<?php\n\nuse Symfony\\Component\\Dotenv\\Dotenv;\n\nrequire dirname(__DIR__).'/vendor/autoload.php';\n\nif (file_exists(dirname(__DIR__).'/config/bootstrap.php')) {\n    require dirname(__DIR__).'/config/bootstrap.php';\n} elseif (method_exists(Dotenv::class, 'bootEnv')) {\n    (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');\n}\n"
+    }
+  ],
+  "commitMessages": [
+    "Add initial set of files"
+  ],
+  "bytes": 4588
+}

@@ -1,0 +1,30 @@
+{
+  "name": "flutterAttendanceApp",
+  "status": "applied",
+  "description": "Flutter mobile app with a Spring Boot backend for tracking university attendance",
+  "topics": [
+    "flutter",
+    "dart",
+    "spring-boot",
+    "java",
+    "attendance",
+    "cross-platform"
+  ],
+  "confidence": "low",
+  "reasoning": "File tree shows a standard Flutter project (client/ with lib/models, lib/pages, lib/services, multi-platform folders) plus a separate Java Maven project named university-management, implying a client-server attendance app. No manifest contents, entry-point source, or README text were available to confirm specific features, dependencies, or backend framework details beyond the presence of pom.xml and mvnw suggesting Maven/likely Spring Boot.",
+  "unknowns": [
+    "Exact Flutter dependencies (pubspec.yaml contents were not parsed)",
+    "Backend framework/dependencies (pom.xml contents were not parsed, Spring Boot is inferred only from mvnw presence)",
+    "Core app functionality and screens (main.dart and lib/pages/services could not be read)",
+    "API contract between client and backend",
+    "Whether the two folders are actually linked/integrated or independent projects",
+    "License status beyond absence of a LICENSE file in the tree"
+  ],
+  "generatedAt": "2026-09-05T16:32:10.463Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:42.378Z",
+    "readmeSha": "bd109cf953eb30ff69daea094e09cb6bb192cc0b",
+    "metadataUpdated": true
+  }
+}

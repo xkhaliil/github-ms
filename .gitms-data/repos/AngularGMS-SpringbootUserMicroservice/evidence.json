@@ -1,0 +1,59 @@
+{
+  "repo": {
+    "name": "AngularGMS-SpringbootUserMicroservice",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2023-05-18T21:55:59Z",
+    "pushedAt": "2023-05-18T22:23:24Z",
+    "defaultBranch": "main",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "Java": 17487
+  },
+  "tree": [
+    "HELP.md",
+    "microsservice.iml",
+    "mvnw",
+    "mvnw.cmd",
+    "pom.xml",
+    "src",
+    "src/main",
+    "src/main/java",
+    "src/main/resources",
+    "src/test",
+    "src/test/java",
+    "target"
+  ],
+  "treeTruncated": false,
+  "manifests": [
+    {
+      "file": "pom.xml",
+      "ecosystem": "maven",
+      "dependencies": [
+        "spring-boot-starter-data-jpa",
+        "spring-boot-starter-web-services",
+        "spring-boot-devtools",
+        "mysql-connector-j",
+        "spring-boot-starter-security",
+        "java-jwt",
+        "lombok",
+        "spring-boot-starter-test"
+      ],
+      "packageName": "spring-boot-starter-parent",
+      "description": "microsservice"
+    }
+  ],
+  "existingReadme": null,
+  "entrypoints": [],
+  "commitMessages": [
+    "commit final",
+    "Add files via upload"
+  ],
+  "bytes": 916
+}

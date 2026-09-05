@@ -3,7 +3,7 @@ import {
   GITHUB_DESCRIPTION_MAX,
   ProposalSchema,
   normaliseProposal,
-} from "../server/ai/schemas.js";
+} from "../core/ai/schemas.js";
 
 const valid = {
   description: "CLI that converts Postman collections into runnable pytest suites",

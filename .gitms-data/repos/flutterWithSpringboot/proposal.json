@@ -1,0 +1,29 @@
+{
+  "name": "flutterWithSpringboot",
+  "status": "applied",
+  "description": "Flutter app with a Spring Boot backend for managing university departments, classes, subjects, and students",
+  "topics": [
+    "flutter",
+    "dart",
+    "spring-boot",
+    "java",
+    "university-management",
+    "mobile-app"
+  ],
+  "confidence": "low",
+  "reasoning": "File tree shows a Flutter client (pubspec.yaml, lib/pages, lib/services, lib/models) paired with a Spring Boot server project (pom.xml, mvnw) under server/university-management, indicating a client-server university management app. No entry-point source files (main.dart, controller classes) could be read, so exact features, API routes, and dependency versions are unconfirmed.",
+  "unknowns": [
+    "Exact API endpoints and communication protocol between Flutter client and Spring Boot server",
+    "Specific Flutter and Java dependencies (only manifest presence confirmed, contents not parsed)",
+    "Authentication mechanism used in sign_in.dart/sign_up.dart and auth_service.dart",
+    "Whether the project has any license",
+    "How to build/run either the client or server (no scripts read)"
+  ],
+  "generatedAt": "2026-09-05T16:32:29.047Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:50.136Z",
+    "readmeSha": "48a974b9c84bc7cea7abaf6c44211d4afa8e4397",
+    "metadataUpdated": true
+  }
+}

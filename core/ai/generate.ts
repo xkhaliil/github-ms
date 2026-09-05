@@ -1,7 +1,11 @@
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { anthropic } from "./client.js";
 import { SYSTEM_PROMPT, buildUserMessage } from "./prompt.js";
-import { ProposalSchema, normaliseProposal, type ProposalOutput } from "./schemas.js";
+import {
+  ProposalSchema,
+  normaliseProposal,
+  type ProposalOutput,
+} from "./schemas.js";
 import type { Evidence } from "../analyze/fingerprint.js";
 import type { Effort, ModelId } from "../../shared/types.js";
 
@@ -20,6 +24,7 @@ export interface GenerationResult {
 }
 
 export interface GenerateOptions {
+  apiKey: string;
   model: ModelId;
   effort: Effort;
   mock: boolean;
@@ -34,16 +39,22 @@ export async function generateProposal(
 ): Promise<GenerationResult> {
   if (opts.mock) return mockProposal(evidence);
 
-  const client = anthropic();
+  const client = anthropic(opts.apiKey);
   const response = await client.messages.parse({
     model: opts.model,
     max_tokens: MAX_OUTPUT_TOKENS,
     // The system prompt is identical for every repo in a run, so marking it here
     // makes every request after the first a cache read.
     system: [
-      { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+      {
+        type: "text",
+        text: SYSTEM_PROMPT,
+        cache_control: { type: "ephemeral" },
+      },
     ],
-    messages: [{ role: "user", content: buildUserMessage(evidence, opts.hint) }],
+    messages: [
+      { role: "user", content: buildUserMessage(evidence, opts.hint) },
+    ],
     thinking: { type: "adaptive" },
     output_config: {
       effort: opts.effort,
@@ -80,7 +91,8 @@ export async function generateProposal(
  */
 function mockProposal(evidence: Evidence): GenerationResult {
   const { repo, manifests, languages } = evidence;
-  const primary = Object.entries(languages).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "unknown";
+  const primary =
+    Object.entries(languages).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "unknown";
   const deps = manifests.flatMap((m) => m.dependencies).slice(0, 8);
   const ecosystems = [...new Set(manifests.map((m) => m.ecosystem))];
 
@@ -104,7 +116,9 @@ function mockProposal(evidence: Evidence): GenerationResult {
     "",
     "## Tech stack",
     "",
-    ...(deps.length ? deps.map((d) => `- ${d}`) : ["- (no dependency manifests found)"]),
+    ...(deps.length
+      ? deps.map((d) => `- ${d}`)
+      : ["- (no dependency manifests found)"]),
     "",
     "## File tree sample",
     "",
@@ -119,10 +133,20 @@ function mockProposal(evidence: Evidence): GenerationResult {
       topics,
       readme,
       confidence: "low",
-      reasoning: "Mock mode: no model was called. Values are derived directly from the evidence.",
-      unknowns: ["Everything - this is mock output and must not be applied as-is."],
+      reasoning:
+        "Mock mode: no model was called. Values are derived directly from the evidence.",
+      unknowns: [
+        "Everything - this is mock output and must not be applied as-is.",
+      ],
     },
-    notes: ["Generated in mock mode - no API call was made and nothing was charged."],
-    usage: { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 },
+    notes: [
+      "Generated in mock mode - no API call was made and nothing was charged.",
+    ],
+    usage: {
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+    },
   };
 }

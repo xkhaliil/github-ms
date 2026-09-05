@@ -1,0 +1,44 @@
+{
+  "repo": {
+    "name": "JEE_Project",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2023-03-02T22:19:32Z",
+    "pushedAt": "2023-03-02T22:25:12Z",
+    "defaultBranch": "master",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "Java": 4666
+  },
+  "tree": [
+    ".classpath",
+    ".project",
+    ".settings",
+    ".settings/.jsdtscope",
+    ".settings/org.eclipse.core.resources.prefs",
+    ".settings/org.eclipse.jdt.core.prefs",
+    ".settings/org.eclipse.wst.common.component",
+    ".settings/org.eclipse.wst.common.project.facet.core.xml",
+    ".settings/org.eclipse.wst.jsdt.ui.superType.container",
+    ".settings/org.eclipse.wst.jsdt.ui.superType.name",
+    "build",
+    "src",
+    "src/main",
+    "src/main/java",
+    "src/main/webapp"
+  ],
+  "treeTruncated": false,
+  "manifests": [],
+  "existingReadme": null,
+  "entrypoints": [],
+  "commitMessages": [
+    "JEE project"
+  ],
+  "bytes": 816
+}

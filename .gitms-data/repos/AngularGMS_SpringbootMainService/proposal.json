@@ -1,0 +1,30 @@
+{
+  "name": "AngularGMS_SpringbootMainService",
+  "status": "applied",
+  "description": "Spring Boot backend service with JWT-based authentication, Spring Data JPA, and Thymeleaf views, intended as the main service for a system also referenced as 'AngularGMS'",
+  "topics": [
+    "java",
+    "spring-boot",
+    "spring-security",
+    "jwt",
+    "mysql",
+    "thymeleaf"
+  ],
+  "confidence": "low",
+  "reasoning": "Only the pom.xml dependency manifest and a file tree were available; no application source files, controllers, or configuration files could be read. The Java package structure, actual REST/MVC endpoints, and the relationship to an 'Angular' frontend implied by the repo name could not be verified. Dependencies (Spring Security, JWT, JPA, MySQL, Thymeleaf) are the only concrete evidence of what the service technically does.",
+  "unknowns": [
+    "What business domain the 'GMS' in the repo name refers to (e.g., gym management system) — could not be confirmed from code",
+    "Actual REST/MVC endpoints and controllers, since no source files could be read",
+    "Whether an Angular frontend exists in a separate repository and how it integrates with this service",
+    "Database schema and entities used by Spring Data JPA",
+    "Authentication/authorization flow details beyond the presence of JWT and Spring Security dependencies",
+    "Whether a license is intended for this project"
+  ],
+  "generatedAt": "2026-09-05T16:32:44.701Z",
+  "model": "claude-sonnet-5",
+  "applied": {
+    "at": "2026-09-05T16:36:35.261Z",
+    "readmeSha": "6386d6c910c3e6e79d3bc653f0cc2dcf15880e5e",
+    "metadataUpdated": true
+  }
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { navigate } from "../App.js";
-import { clearCredentials, getSettings, updateSettings } from "../api.js";
+import { clearCredentials, clearLocalData, getSettings, updateSettings } from "../api.js";
 import { Banner, Button, Field, Panel, Select, Spinner, Switch } from "../components/ui.js";
 import { KeyIcon } from "../components/icons.js";
 import { EFFORTS, MODELS, type AuthStatus, type Settings } from "@shared/types.js";
@@ -23,6 +23,8 @@ export function SettingsPage({
   const [settings, setSettings] = useState<Settings | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [confirmWipe, setConfirmWipe] = useState(false);
+  const [wiped, setWiped] = useState(false);
 
   useEffect(() => {
     void getSettings()
@@ -130,7 +132,7 @@ export function SettingsPage({
           <Row label="GitHub" value={auth.github.masked ?? "not set"} mono />
           <Row
             label="Storage"
-            value={auth.remembered ? "on disk in ~/.gitms" : "in memory only"}
+            value={auth.remembered ? "saved in this browser" : "this tab only"}
           />
         </dl>
 
@@ -162,6 +164,52 @@ export function SettingsPage({
             </Button>
           )}
         </div>
+      </Panel>
+
+      <Panel title="Local data">
+        <p className="text-[13px] leading-relaxed text-muted">
+          Your scan, proposals and evidence are stored in this browser only. Nothing was uploaded
+          anywhere, so clearing them here is the whole deletion — but it cannot be undone, and
+          proposals already applied to GitHub stay applied.
+        </p>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {confirmWipe ? (
+            <>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  void (async () => {
+                    try {
+                      await clearLocalData();
+                      setWiped(true);
+                      setConfirmWipe(false);
+                    } catch (err) {
+                      setError(err instanceof Error ? err.message : String(err));
+                    }
+                  })();
+                }}
+              >
+                Confirm — delete everything stored here
+              </Button>
+              <Button variant="ghost" onClick={() => setConfirmWipe(false)}>
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <Button variant="danger" onClick={() => setConfirmWipe(true)}>
+              Delete local data
+            </Button>
+          )}
+        </div>
+
+        {wiped && (
+          <div className="mt-4">
+            <Banner tone="success">
+              Local data deleted. Run a scan from the Repositories tab to start again.
+            </Banner>
+          </div>
+        )}
       </Panel>
     </div>
   );

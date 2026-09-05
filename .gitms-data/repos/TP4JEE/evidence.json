@@ -1,0 +1,33 @@
+{
+  "repo": {
+    "name": "TP4JEE",
+    "owner": "xkhaliil",
+    "description": null,
+    "topics": [],
+    "homepage": null,
+    "license": null,
+    "stars": 0,
+    "createdAt": "2023-03-07T22:27:00Z",
+    "pushedAt": "2023-03-07T22:35:24Z",
+    "defaultBranch": "main",
+    "isFork": false,
+    "isArchived": false
+  },
+  "languages": {
+    "Java": 13676
+  },
+  "tree": [
+    "src",
+    "src/main",
+    "src/main/java",
+    "src/main/webapp"
+  ],
+  "treeTruncated": false,
+  "manifests": [],
+  "existingReadme": null,
+  "entrypoints": [],
+  "commitMessages": [
+    "Add files via upload"
+  ],
+  "bytes": 458
+}

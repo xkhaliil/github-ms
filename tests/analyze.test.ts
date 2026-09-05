@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { parseManifest } from "../server/analyze/manifests.js";
-import { isTooThin, pickEntrypoints, trimTree } from "../server/analyze/fingerprint.js";
-import { deriveFileFacts } from "../server/github/repos.js";
-import type { Evidence } from "../server/analyze/fingerprint.js";
+import { parseManifest } from "../core/analyze/manifests.js";
+import { isTooThin, pickEntrypoints, trimTree } from "../core/analyze/fingerprint.js";
+import { deriveFileFacts } from "../core/github/repos.js";
+import type { Evidence } from "../core/analyze/fingerprint.js";
 
 describe("parseManifest", () => {
   it("reads name, description, deps and scripts from package.json", () => {

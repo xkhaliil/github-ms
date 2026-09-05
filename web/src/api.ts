@@ -1,4 +1,12 @@
-import { SESSION_HEADER } from "@shared/constants.js";
+import { auditRepo, prioritise } from "@core/analyze/hygiene.js";
+import { describeAnthropicError, resetAnthropicCache, testAnthropicKey } from "@core/ai/client.js";
+import { describeGithubError, resetClientCache, testGithubToken } from "@core/github/client.js";
+import { GITHUB_DESCRIPTION_MAX, MAX_TOPICS, TOPIC_PATTERN } from "@core/ai/schemas.js";
+import { estimateRun } from "@core/pricing.js";
+import * as creds from "./lib/credentials.js";
+import * as store from "./lib/store.js";
+import { currentJob, getJob, recentJobs, startJob, type Job } from "./lib/jobs.js";
+import { runApply, runGenerate, runScan } from "./lib/pipeline.js";
 import type {
   AccountAudit,
   AuthStatus,
@@ -13,34 +21,11 @@ import type {
 } from "@shared/types.js";
 
 /**
- * The session token is fetched once and attached to every mutating request. The
- * server issues a fresh one per process, so a stale tab gets a clear 401 telling
- * it to reload rather than silently failing.
+ * The boundary the pages call. gitms runs entirely in this tab: each function
+ * executes against the user's own credentials, talking only to api.github.com
+ * and api.anthropic.com. Keeping it shaped like a client means the pages stay
+ * unaware of where the work happens.
  */
-let sessionToken: string | null = null;
-
-/**
- * In dev the Vite server is ready about a second before the API is, so the first
- * load reliably lost this race. Retry briefly rather than showing a dead-end
- * error the user can only fix by reloading.
- */
-export async function initSession(attempts = 12): Promise<void> {
-  for (let i = 0; i < attempts; i++) {
-    try {
-      const res = await fetch("/api/session");
-      if (res.ok) {
-        sessionToken = ((await res.json()) as { token: string }).token;
-        return;
-      }
-    } catch {
-      // Connection refused while the API is still starting.
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500));
-  }
-  throw new Error(
-    "Could not reach the gitms server on port 5124. Check the terminal running `npm run dev`.",
-  );
-}
 
 export class ApiError extends Error {
   constructor(
@@ -52,43 +37,89 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const headers = new Headers(init?.headers);
-  if (init?.body) headers.set("Content-Type", "application/json");
-  if (sessionToken) headers.set(SESSION_HEADER, sessionToken);
-
-  const res = await fetch(path, { ...init, headers });
-  const text = await res.text();
-  const body = text ? (JSON.parse(text) as unknown) : null;
-
-  if (!res.ok) {
-    const message =
-      (body as { error?: string } | null)?.error ?? `Request failed (${res.status})`;
-    throw new ApiError(message, res.status);
-  }
-  return body as T;
+/** Loads credentials from browser storage. Async so App.tsx is unchanged. */
+export async function initSession(): Promise<void> {
+  creds.loadCredentials();
 }
-
-const post = <T>(path: string, payload?: unknown) =>
-  request<T>(path, { method: "POST", ...(payload ? { body: JSON.stringify(payload) } : {}) });
-
-const put = <T>(path: string, payload: unknown) =>
-  request<T>(path, { method: "PUT", body: JSON.stringify(payload) });
 
 /* ---------------------------------------------------------------- auth --- */
 
-export const getAuthStatus = () => request<AuthStatus>("/api/auth/status");
+export const getAuthStatus = async (): Promise<AuthStatus> => creds.authStatus();
 
-export const testCredential = (kind: "anthropic" | "github", value?: string) =>
-  post<ConnectionTest>("/api/auth/test", value ? { kind, value } : { kind });
+export async function testCredential(
+  kind: "anthropic" | "github",
+  value?: string,
+): Promise<ConnectionTest> {
+  const held = creds.getCredentials();
+  const candidate =
+    value?.trim() || (kind === "anthropic" ? held.anthropicKey : held.githubToken) || "";
 
-export const saveCredentials = (payload: {
+  if (!candidate) {
+    return {
+      ok: false,
+      kind,
+      error: kind === "anthropic" ? "Enter an Anthropic API key." : "Enter a GitHub token.",
+    };
+  }
+
+  try {
+    if (kind === "anthropic") {
+      const settings = await store.readSettings();
+      const { identity, warning } = await testAnthropicKey(candidate, settings.model);
+      return warning === undefined
+        ? { ok: true, kind, identity }
+        : { ok: true, kind, identity, warning };
+    }
+    const { identity, warning } = await testGithubToken(candidate);
+    if (candidate === held.githubToken) creds.setGithubIdentity(identity);
+    return warning === undefined
+      ? { ok: true, kind, identity }
+      : { ok: true, kind, identity, warning };
+  } catch (err) {
+    const described = kind === "anthropic" ? describeAnthropicError(err) : describeGithubError(err);
+    return { ok: false, kind, ...described };
+  }
+}
+
+export async function saveCredentials(payload: {
   anthropicKey?: string;
   githubToken?: string;
   remember?: boolean;
-}) => post<{ status: AuthStatus; permissionsRestricted: boolean }>("/api/auth/save", payload);
+}): Promise<{ status: AuthStatus; permissionsRestricted: boolean }> {
+  if (payload.remember !== undefined) creds.setRemember(payload.remember);
 
-export const clearCredentials = () => post<AuthStatus>("/api/auth/clear");
+  if (typeof payload.anthropicKey === "string") {
+    creds.setAnthropicKey(payload.anthropicKey);
+    resetAnthropicCache();
+  }
+  if (typeof payload.githubToken === "string") {
+    creds.setGithubToken(payload.githubToken);
+    resetClientCache();
+    creds.setGithubIdentity(null);
+    if (payload.githubToken.trim()) {
+      try {
+        const { identity } = await testGithubToken(payload.githubToken.trim());
+        creds.setGithubIdentity(identity);
+      } catch {
+        // A save with a bad token is still a save; the test path reports why.
+      }
+    }
+  }
+
+  // Browser storage has no file permissions to restrict; the Setup page carries a
+  // storage-specific warning instead, so this stays true rather than alarming.
+  return { status: creds.authStatus(), permissionsRestricted: true };
+}
+
+export async function clearCredentials(): Promise<AuthStatus> {
+  creds.clearCredentials();
+  resetClientCache();
+  resetAnthropicCache();
+  return creds.authStatus();
+}
+
+/** Wipes scans, proposals and evidence from this device. */
+export const clearLocalData = () => store.clearAllData();
 
 /* --------------------------------------------------------------- repos --- */
 
@@ -101,7 +132,20 @@ export interface ReposResponse {
   priority: string[];
 }
 
-export const getRepos = () => request<ReposResponse>("/api/repos");
+export async function getRepos(): Promise<ReposResponse> {
+  const inventory = await store.readInventory();
+  if (!inventory) return { scanned: false, repos: [], audit: null, priority: [] };
+
+  const audit = await store.readAudit();
+  return {
+    scanned: true,
+    scannedAt: inventory.scannedAt,
+    owner: inventory.owner,
+    repos: inventory.repos,
+    audit,
+    priority: audit ? prioritise(audit, inventory.repos) : [],
+  };
+}
 
 export interface RepoDetail {
   repo: RepoSummary;
@@ -110,84 +154,187 @@ export interface RepoDetail {
   proposal: RepoProposal | null;
 }
 
-export const getRepo = (name: string) =>
-  request<RepoDetail>(`/api/repos/${encodeURIComponent(name)}`);
+export async function getRepo(name: string): Promise<RepoDetail> {
+  const inventory = await store.readInventory();
+  const repo = inventory?.repos.find((r) => r.name === name);
+  if (!repo) throw new ApiError(`No scanned repository named ${name}.`, 404);
+
+  return {
+    repo,
+    audit: auditRepo(repo),
+    evidence: await store.readEvidence(name),
+    proposal: await store.readProposal(name),
+  };
+}
 
 /* ----------------------------------------------------------- proposals --- */
 
-export const getProposals = () =>
-  request<{ proposals: RepoProposal[]; manifest: ManifestEntry[] }>("/api/proposals");
+export async function getProposals(): Promise<{
+  proposals: RepoProposal[];
+  manifest: ManifestEntry[];
+}> {
+  return { proposals: await store.listProposals(), manifest: await store.rebuildManifest() };
+}
 
-export const updateProposal = (
+const VALID_STATUSES: ProposalStatus[] = ["pending", "approved", "skipped", "applied", "failed"];
+const CONFIDENCE_RANK = { low: 0, medium: 1, high: 2 } as const;
+
+export async function updateProposal(
   name: string,
   patch: { description?: string; topics?: string[]; readme?: string; status?: ProposalStatus },
-) => put<RepoProposal>(`/api/proposals/${encodeURIComponent(name)}`, patch);
+): Promise<RepoProposal> {
+  const existing = await store.readProposal(name);
+  if (!existing) throw new ApiError("No proposal for that repository yet.", 404);
 
-export const bulkUpdateProposals = (payload: {
+  const next = { ...existing };
+
+  if (typeof patch.description === "string") {
+    const description = patch.description.trim();
+    if (description.length > GITHUB_DESCRIPTION_MAX) {
+      throw new ApiError(`Description must be ${GITHUB_DESCRIPTION_MAX} characters or fewer.`, 400);
+    }
+    next.description = description;
+  }
+
+  if (Array.isArray(patch.topics)) {
+    const topics = patch.topics.map((t) => t.trim().toLowerCase()).filter(Boolean);
+    const invalid = topics.filter((t) => !TOPIC_PATTERN.test(t));
+    if (invalid.length) {
+      throw new ApiError(
+        `Invalid topics: ${invalid.join(", ")}. Use lowercase letters, digits and hyphens.`,
+        400,
+      );
+    }
+    if (topics.length > MAX_TOPICS) {
+      throw new ApiError(`GitHub topics are capped at ${MAX_TOPICS} here.`, 400);
+    }
+    next.topics = [...new Set(topics)];
+  }
+
+  if (typeof patch.readme === "string") next.readme = patch.readme;
+
+  if (patch.status) {
+    if (!VALID_STATUSES.includes(patch.status)) {
+      throw new ApiError(`Unknown status: ${patch.status}`, 400);
+    }
+    // "applied" is set by the apply pipeline, never by a client edit.
+    if (patch.status === "applied") {
+      throw new ApiError("A proposal becomes applied by running Apply, not by editing it.", 400);
+    }
+    next.status = patch.status;
+  }
+
+  await store.writeProposal(next);
+  return next;
+}
+
+export async function bulkUpdateProposals(payload: {
   repos?: string[];
   status?: ProposalStatus;
   minConfidence?: "high" | "medium" | "low";
-}) => post<{ updated: string[]; manifest: ManifestEntry[] }>("/api/proposals/bulk", payload);
+}): Promise<{ updated: string[]; manifest: ManifestEntry[] }> {
+  const status = payload.status ?? "approved";
+  if (!VALID_STATUSES.includes(status) || status === "applied") {
+    throw new ApiError(`Cannot bulk-set status to ${status}.`, 400);
+  }
 
-export const deleteProposal = (name: string) =>
-  request<{ deleted: string }>(`/api/proposals/${encodeURIComponent(name)}`, { method: "DELETE" });
+  const all = await store.listProposals();
+  const targets = all.filter((p) => {
+    if (p.status === "applied") return false; // never re-flag work already live
+    if (payload.repos) return payload.repos.includes(p.name);
+    if (payload.minConfidence) {
+      return CONFIDENCE_RANK[p.confidence] >= CONFIDENCE_RANK[payload.minConfidence];
+    }
+    return false;
+  });
+
+  for (const proposal of targets) {
+    await store.writeProposal({ ...proposal, status });
+  }
+
+  return { updated: targets.map((p) => p.name), manifest: await store.rebuildManifest() };
+}
+
+export async function deleteProposal(name: string): Promise<{ deleted: string }> {
+  await store.deleteProposal(name);
+  return { deleted: name };
+}
 
 /* ------------------------------------------------------------ settings --- */
 
-export const getSettings = () => request<Settings>("/api/settings");
-export const updateSettings = (patch: Partial<Settings>) => put<Settings>("/api/settings", patch);
+export const getSettings = () => store.readSettings();
+export const updateSettings = (patch: Partial<Settings>) => store.writeSettings(patch);
 
-export const getEstimate = (repos: number) =>
-  request<{
-    repos: number;
-    model: string;
-    batchMode: boolean;
-    mockAi: boolean;
-    estimatedCostUsd: number;
-  }>(`/api/settings/estimate?repos=${repos}`);
+export async function getEstimate(repos: number): Promise<{
+  repos: number;
+  model: string;
+  batchMode: boolean;
+  mockAi: boolean;
+  estimatedCostUsd: number;
+}> {
+  const settings = await store.readSettings();
+  return {
+    repos,
+    model: settings.model,
+    batchMode: settings.batchMode,
+    mockAi: settings.mockAi,
+    estimatedCostUsd: settings.mockAi ? 0 : estimateRun(repos, settings.model, settings.batchMode),
+  };
+}
 
 /* ---------------------------------------------------------------- jobs --- */
 
-export const startScan = () => post<{ jobId: string }>("/api/scan");
+async function begin(
+  kind: "scan" | "generate" | "apply",
+  run: (job: Job) => Promise<void>,
+): Promise<string> {
+  const settings = await store.readSettings();
+  try {
+    return startJob(kind, settings.model, settings.batchMode, run).id;
+  } catch (err) {
+    throw new ApiError(err instanceof Error ? err.message : String(err), 409);
+  }
+}
 
-export const startGenerate = (repos: string[], hint?: string) =>
-  post<{ jobId: string }>("/api/generate", hint ? { repos, hint } : { repos });
+export const startScan = async () => ({ jobId: await begin("scan", runScan) });
 
-export const startApply = (dryRun: boolean, repos?: string[]) =>
-  post<{ jobId: string; dryRun: boolean }>("/api/apply", repos ? { repos, dryRun } : { dryRun });
+export const startGenerate = async (repos: string[], hint?: string) => {
+  if (repos.length === 0) throw new ApiError("Select at least one repository.", 400);
+  const request = hint ? { repos, hint } : { repos };
+  return { jobId: await begin("generate", (job) => runGenerate(job, request)) };
+};
 
-export const cancelJob = (id: string) => post<JobSnapshot>(`/api/jobs/${id}/cancel`);
+export const startApply = async (dryRun: boolean, repos?: string[]) => {
+  const request = repos ? { repos, dryRun } : { dryRun };
+  return { jobId: await begin("apply", (job) => runApply(job, request)), dryRun };
+};
 
-export const getJobs = () =>
-  request<{ current: JobSnapshot | null; recent: JobSnapshot[] }>("/api/jobs");
+export async function cancelJob(id: string): Promise<JobSnapshot> {
+  const job = getJob(id);
+  if (!job) throw new ApiError("No such job.", 404);
+  job.cancel();
+  return job.get();
+}
+
+export async function getJobs(): Promise<{ current: JobSnapshot | null; recent: JobSnapshot[] }> {
+  return { current: currentJob()?.get() ?? null, recent: recentJobs() };
+}
 
 /**
- * Subscribes to a job's SSE stream. Returns an unsubscribe function; the stream
- * closes itself when the job reaches a terminal state.
+ * Subscribes to a running job. The job lives in this tab, so updates arrive by
+ * direct call rather than over SSE; the signature is kept so callers are
+ * unchanged, and the returned function still unsubscribes.
  */
 export function streamJob(
   id: string,
   onUpdate: (snapshot: JobSnapshot) => void,
   onError?: (message: string) => void,
 ): () => void {
-  const source = new EventSource(`/api/jobs/${id}/stream`);
-  let finished = false;
-
-  source.onmessage = (event) => {
-    const snapshot = JSON.parse(event.data as string) as JobSnapshot;
-    onUpdate(snapshot);
-    if (["done", "failed", "cancelled"].includes(snapshot.state)) {
-      finished = true;
-      source.close();
-    }
-  };
-
-  source.onerror = () => {
-    // The server ends the stream on completion, which surfaces here as an error
-    // too - only report it when the job had not actually finished.
-    source.close();
-    if (!finished) onError?.("Lost connection to the job stream.");
-  };
-
-  return () => source.close();
+  const job = getJob(id);
+  if (!job) {
+    // A reload drops in-tab jobs; say so rather than hanging on a dead id.
+    onError?.("That run is no longer available - it ended when the page was reloaded.");
+    return () => {};
+  }
+  return job.subscribe(onUpdate);
 }

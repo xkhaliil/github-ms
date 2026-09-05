@@ -8,27 +8,12 @@
 import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { fixtures } from "./seed-fixtures.mjs";
 
 const OUT = path.resolve(import.meta.dirname, "..", ".screenshots");
 const BASE = "http://127.0.0.1:5123";
 
 await mkdir(OUT, { recursive: true });
-
-/*
- * Placeholder credentials, memory-only, so the authenticated screens render.
- * They are re-seeded on every run because the dev server restarts on file
- * changes and in-memory keys correctly do not survive that.
- */
-const token = (await (await fetch(`${BASE}/api/session`)).json()).token;
-await fetch(`${BASE}/api/auth/save`, {
-  method: "POST",
-  headers: { "content-type": "application/json", "x-gitms-session": token },
-  body: JSON.stringify({
-    anthropicKey: "sk-ant-fixture-key-0000",
-    githubToken: "ghp_fixture_token_0000",
-    remember: false,
-  }),
-});
 
 const browser = await chromium.launch({
   channel: "chrome",
@@ -39,6 +24,52 @@ const page = await browser.newPage({
   deviceScaleFactor: 2,
   colorScheme: "dark",
 });
+
+/*
+ * The app keeps its state in the browser, so the fixtures go in the same way the
+ * app writes them: placeholder credentials into sessionStorage, scan and
+ * proposals into IndexedDB. Nothing here touches a real account.
+ */
+await page.goto(BASE, { waitUntil: "networkidle" });
+await page.evaluate(async (data) => {
+  sessionStorage.setItem("gitms.anthropicKey", "sk-ant-fixture-key-0000");
+  sessionStorage.setItem("gitms.githubToken", "ghp_fixture_token_0000");
+  sessionStorage.setItem(
+    "gitms.githubIdentity",
+    JSON.stringify({
+      login: "wassim",
+      name: "Wassim",
+      avatarUrl: "",
+      publicRepos: data.inventory.repos.length,
+      scopes: ["repo"],
+      fineGrained: false,
+    }),
+  );
+
+  const db = await new Promise((res, rej) => {
+    const r = indexedDB.open("gitms", 1);
+    r.onupgradeneeded = () => {
+      for (const s of ["kv", "proposals", "evidence"]) {
+        if (!r.result.objectStoreNames.contains(s)) r.result.createObjectStore(s);
+      }
+    };
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+
+  const put = (store, key, value) =>
+    new Promise((res, rej) => {
+      const tx = db.transaction(store, "readwrite");
+      tx.objectStore(store).put(value, key);
+      tx.oncomplete = res;
+      tx.onerror = () => rej(tx.error);
+    });
+
+  await put("kv", "inventory", data.inventory);
+  await put("kv", "audit", data.audit);
+  for (const p of data.proposals) await put("proposals", p.name, p);
+  for (const [name, e] of Object.entries(data.evidence)) await put("evidence", name, e);
+}, fixtures);
 
 const shots = [
   ["setup", "#/setup"],
