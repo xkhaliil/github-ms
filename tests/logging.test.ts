@@ -15,30 +15,48 @@ describe("isExpectedApiNoise", () => {
   });
 
   it("silences missing manifests, languages and commit history", () => {
-    expect(isExpectedApiNoise("GET /repos/me/x/contents/package.json - 404 with id A in 10ms")).toBe(
-      true,
-    );
-    expect(isExpectedApiNoise("GET /repos/me/x/languages - 404 with id A in 10ms")).toBe(true);
-    expect(isExpectedApiNoise("GET /repos/me/x/commits - 404 with id A in 10ms")).toBe(true);
+    expect(
+      isExpectedApiNoise(
+        "GET /repos/me/x/contents/package.json - 404 with id A in 10ms",
+      ),
+    ).toBe(true);
+    expect(
+      isExpectedApiNoise("GET /repos/me/x/languages - 404 with id A in 10ms"),
+    ).toBe(true);
+    expect(
+      isExpectedApiNoise("GET /repos/me/x/commits - 404 with id A in 10ms"),
+    ).toBe(true);
   });
 
   it("silences the 409 an empty repository returns for its tree", () => {
-    expect(isExpectedApiNoise("GET /repos/me/x/git/trees/main - 409 with id A in 10ms")).toBe(true);
+    expect(
+      isExpectedApiNoise(
+        "GET /repos/me/x/git/trees/main - 409 with id A in 10ms",
+      ),
+    ).toBe(true);
   });
 
   it("still reports a 409 when writing a README - that is a real conflict", () => {
     expect(
-      isExpectedApiNoise("PUT /repos/me/x/contents/README.md - 409 with id A in 10ms"),
+      isExpectedApiNoise(
+        "PUT /repos/me/x/contents/README.md - 409 with id A in 10ms",
+      ),
     ).toBe(false);
   });
 
   it("still reports auth and permission failures", () => {
     expect(isExpectedApiNoise("GET /user - 401 with id A in 10ms")).toBe(false);
-    expect(isExpectedApiNoise("PATCH /repos/me/x - 403 with id A in 10ms")).toBe(false);
-    expect(isExpectedApiNoise("PUT /repos/me/x/topics - 404 with id A in 10ms")).toBe(false);
+    expect(
+      isExpectedApiNoise("PATCH /repos/me/x - 403 with id A in 10ms"),
+    ).toBe(false);
+    expect(
+      isExpectedApiNoise("PUT /repos/me/x/topics - 404 with id A in 10ms"),
+    ).toBe(false);
   });
 
   it("still reports server errors on the same endpoints", () => {
-    expect(isExpectedApiNoise("GET /repos/me/x/readme - 500 with id A in 10ms")).toBe(false);
+    expect(
+      isExpectedApiNoise("GET /repos/me/x/readme - 500 with id A in 10ms"),
+    ).toBe(false);
   });
 });

@@ -26,10 +26,10 @@ npm run dev
 
 Open `http://127.0.0.1:5123`. On first run you are asked for two credentials:
 
-| Credential | Where to get it | What it needs |
-| --- | --- | --- |
-| Anthropic API key | [console.anthropic.com](https://console.anthropic.com/settings/keys) | any key — testing it is free |
-| GitHub token | [github.com/settings/tokens](https://github.com/settings/tokens/new?scopes=repo&description=gitms) | classic token with the `repo` scope |
+| Credential        | Where to get it                                                                                    | What it needs                       |
+| ----------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Anthropic API key | [console.anthropic.com](https://console.anthropic.com/settings/keys)                               | any key — testing it is free        |
+| GitHub token      | [github.com/settings/tokens](https://github.com/settings/tokens/new?scopes=repo&description=gitms) | classic token with the `repo` scope |
 
 A fine-grained GitHub token works too, but needs Metadata: read, Contents: write and Administration: write. GitHub does not report a fine-grained token's permissions, so the app cannot verify them before the run and says so.
 
@@ -75,14 +75,14 @@ Mock mode runs the entire pipeline without calling the API, for free. Use it onc
 
 ## Commands
 
-| Command | Does |
-| --- | --- |
-| `npm run dev` | Vite dev server on 5123 |
-| `npm run build` | Typechecks, then builds the static site into `web/dist` |
-| `npm run preview` | Serves the built site exactly as it will be deployed |
-| `npm test` | Unit tests for the schema, hygiene rules and manifest parsers |
-| `npm run brand:render` | Regenerates the raster brand assets from the SVG sources |
-| `npm run qa:shoot` | Loads fixture data into a browser and screenshots every screen to `.screenshots/` |
+| Command                | Does                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| `npm run dev`          | Vite dev server on 5123                                                           |
+| `npm run build`        | Typechecks, then builds the static site into `web/dist`                           |
+| `npm run preview`      | Serves the built site exactly as it will be deployed                              |
+| `npm test`             | Unit tests for the schema, hygiene rules and manifest parsers                     |
+| `npm run brand:render` | Regenerates the raster brand assets from the SVG sources                          |
+| `npm run qa:shoot`     | Loads fixture data into a browser and screenshots every screen to `.screenshots/` |
 
 ## Interface
 

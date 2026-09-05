@@ -29,7 +29,9 @@ function open(): Promise<IDBDatabase> {
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () =>
-      reject(request.error ?? new Error("Could not open the local gitms database."));
+      reject(
+        request.error ?? new Error("Could not open the local gitms database."),
+      );
   });
   return dbPromise;
 }
@@ -48,7 +50,8 @@ function run<T>(
         // Surface the transaction error too: a quota failure lands there, not on
         // the request, and it is the one the user actually needs to be told about.
         request.onerror = () => reject(request.error ?? tx.error);
-        tx.onabort = () => reject(tx.error ?? new Error("Local storage transaction aborted."));
+        tx.onabort = () =>
+          reject(tx.error ?? new Error("Local storage transaction aborted."));
       }),
   );
 }
@@ -58,7 +61,11 @@ export async function idbGet<T>(store: string, key: string): Promise<T | null> {
   return value ?? null;
 }
 
-export function idbSet(store: string, key: string, value: unknown): Promise<IDBValidKey> {
+export function idbSet(
+  store: string,
+  key: string,
+  value: unknown,
+): Promise<IDBValidKey> {
   return run(store, "readwrite", (s) => s.put(value, key));
 }
 

@@ -9,8 +9,17 @@ import {
   listOwnedRepos,
   scanOptionsFrom,
 } from "@core/github/repos.js";
-import { commitReadme, currentReadme, replaceTopics, updateMetadata } from "@core/github/apply.js";
-import { getGithubIdentity, requireAnthropicKey, requireGithubToken } from "./credentials.js";
+import {
+  commitReadme,
+  currentReadme,
+  replaceTopics,
+  updateMetadata,
+} from "@core/github/apply.js";
+import {
+  getGithubIdentity,
+  requireAnthropicKey,
+  requireGithubToken,
+} from "./credentials.js";
 import {
   listProposals,
   readInventory,
@@ -54,7 +63,12 @@ export async function runScan(job: Job): Promise<void> {
       job.finishStep(repo.name, "done", "empty repository");
       continue;
     }
-    const tree = await getTree(client, repo.owner, repo.name, repo.defaultBranch);
+    const tree = await getTree(
+      client,
+      repo.owner,
+      repo.name,
+      repo.defaultBranch,
+    );
     repo.files = deriveFileFacts(tree);
     job.finishStep(
       repo.name,
@@ -78,7 +92,10 @@ export interface GenerateRequest {
   hint?: string;
 }
 
-export async function runGenerate(job: Job, request: GenerateRequest): Promise<void> {
+export async function runGenerate(
+  job: Job,
+  request: GenerateRequest,
+): Promise<void> {
   const client = gh();
   const settings = await readSettings();
   // Fail before the loop rather than on the first repo, so nothing is half-run.
@@ -91,7 +108,8 @@ export async function runGenerate(job: Job, request: GenerateRequest): Promise<v
     .map((name) => byName.get(name))
     .filter((r): r is RepoSummary => r !== undefined);
 
-  if (targets.length === 0) throw new Error("None of the selected repositories are in the last scan.");
+  if (targets.length === 0)
+    throw new Error("None of the selected repositories are in the last scan.");
 
   job.setSteps(targets.map((r) => r.name));
 
@@ -102,11 +120,19 @@ export async function runGenerate(job: Job, request: GenerateRequest): Promise<v
     try {
       const existing = await readProposal(repo.name);
       if (existing?.status === "applied") {
-        job.finishStep(repo.name, "skipped", "already applied - delete the proposal to regenerate");
+        job.finishStep(
+          repo.name,
+          "skipped",
+          "already applied - delete the proposal to regenerate",
+        );
         continue;
       }
 
-      if (repo.files.hasReadme && !settings.overwriteExistingReadme && !request.hint) {
+      if (
+        repo.files.hasReadme &&
+        !settings.overwriteExistingReadme &&
+        !request.hint
+      ) {
         job.finishStep(
           repo.name,
           "skipped",
@@ -175,11 +201,15 @@ export async function runApply(job: Job, request: ApplyRequest): Promise<void> {
   const all = await listProposals();
 
   const approved = all.filter(
-    (p) => p.status === "approved" && (!request.repos || request.repos.includes(p.name)),
+    (p) =>
+      p.status === "approved" &&
+      (!request.repos || request.repos.includes(p.name)),
   );
 
   if (approved.length === 0) {
-    throw new Error("Nothing is approved yet. Approve at least one proposal before applying.");
+    throw new Error(
+      "Nothing is approved yet. Approve at least one proposal before applying.",
+    );
   }
 
   job.setSteps(approved.map((p) => p.name));
@@ -190,7 +220,11 @@ export async function runApply(job: Job, request: ApplyRequest): Promise<void> {
 
     const repo = repoByName.get(proposal.name);
     if (!repo) {
-      job.finishStep(proposal.name, "failed", "not in the last scan - rescan and try again");
+      job.finishStep(
+        proposal.name,
+        "failed",
+        "not in the last scan - rescan and try again",
+      );
       continue;
     }
 
@@ -209,9 +243,19 @@ export async function runApply(job: Job, request: ApplyRequest): Promise<void> {
     }
   }
 
-  async function applyOne(repo: RepoSummary, proposal: RepoProposal): Promise<void> {
-    await updateMetadata(client, repo.owner, repo.name, { description: proposal.description });
-    await replaceTopics(client, repo.owner, repo.name, mergeTopics(repo.topics, proposal.topics));
+  async function applyOne(
+    repo: RepoSummary,
+    proposal: RepoProposal,
+  ): Promise<void> {
+    await updateMetadata(client, repo.owner, repo.name, {
+      description: proposal.description,
+    });
+    await replaceTopics(
+      client,
+      repo.owner,
+      repo.name,
+      mergeTopics(repo.topics, proposal.topics),
+    );
 
     let readmeSha: string | null = null;
     if (proposal.readme.trim()) {
@@ -240,7 +284,11 @@ export async function runApply(job: Job, request: ApplyRequest): Promise<void> {
     await writeProposal({
       ...proposal,
       status: "applied",
-      applied: { at: new Date().toISOString(), readmeSha, metadataUpdated: true },
+      applied: {
+        at: new Date().toISOString(),
+        readmeSha,
+        metadataUpdated: true,
+      },
     });
   }
 }

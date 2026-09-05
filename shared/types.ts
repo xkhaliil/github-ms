@@ -25,13 +25,22 @@ export interface AnthropicIdentity {
 
 export type ConnectionTest =
   | { ok: true; kind: "github"; identity: GithubIdentity; warning?: string }
-  | { ok: true; kind: "anthropic"; identity: AnthropicIdentity; warning?: string }
+  | {
+      ok: true;
+      kind: "anthropic";
+      identity: AnthropicIdentity;
+      warning?: string;
+    }
   | { ok: false; kind: CredentialKind; error: string; hint?: string };
 
 export interface AuthStatus {
   /** Masked previews only - full key values never travel back to the browser. */
   anthropic: { present: boolean; masked: string | null };
-  github: { present: boolean; masked: string | null; identity: GithubIdentity | null };
+  github: {
+    present: boolean;
+    masked: string | null;
+    identity: GithubIdentity | null;
+  };
   /** True when credentials were loaded from (or saved to) the on-disk file. */
   remembered: boolean;
   ready: boolean;
@@ -109,7 +118,12 @@ export interface AccountAudit {
 
 /* ----------------------------------------------------------- proposals --- */
 
-export type ProposalStatus = "pending" | "approved" | "skipped" | "applied" | "failed";
+export type ProposalStatus =
+  | "pending"
+  | "approved"
+  | "skipped"
+  | "applied"
+  | "failed";
 
 export type Confidence = "high" | "medium" | "low";
 

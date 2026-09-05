@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { auditAccount, auditRepo, prioritise } from "../core/analyze/hygiene.js";
+import {
+  auditAccount,
+  auditRepo,
+  prioritise,
+} from "../core/analyze/hygiene.js";
 import type { RepoSummary } from "../shared/types.js";
 
 function repo(overrides: Partial<RepoSummary> = {}): RepoSummary {
@@ -77,19 +81,31 @@ describe("auditRepo", () => {
   });
 
   it("treats an empty description string as missing", () => {
-    expect(codes(repo({ description: "   " }))).toContain("missing-description");
+    expect(codes(repo({ description: "   " }))).toContain(
+      "missing-description",
+    );
   });
 
   it("only asks for a homepage when something looks deployable", () => {
     expect(codes(repo({ homepage: null }))).not.toContain("missing-homepage");
     expect(
-      codes(repo({ homepage: null, files: { ...repo().files, deployHints: ["vercel.json"] } })),
+      codes(
+        repo({
+          homepage: null,
+          files: { ...repo().files, deployHints: ["vercel.json"] },
+        }),
+      ),
     ).toContain("missing-homepage");
   });
 
   it("accepts a license from the API even without a LICENSE file in the tree", () => {
     expect(
-      codes(repo({ license: "MIT", files: { ...repo().files, hasLicenseFile: false } })),
+      codes(
+        repo({
+          license: "MIT",
+          files: { ...repo().files, hasLicenseFile: false },
+        }),
+      ),
     ).not.toContain("missing-license");
   });
 
@@ -104,7 +120,9 @@ describe("auditRepo", () => {
   });
 
   it("flags a legacy default branch", () => {
-    expect(codes(repo({ defaultBranch: "master" }))).toContain("legacy-default-branch");
+    expect(codes(repo({ defaultBranch: "master" }))).toContain(
+      "legacy-default-branch",
+    );
   });
 });
 
@@ -112,7 +130,12 @@ describe("auditAccount", () => {
   const repos = [
     repo({ name: "good" }),
     repo({ name: "no-desc", description: null }),
-    repo({ name: "bare", description: null, topics: [], files: { ...repo().files, hasReadme: false } }),
+    repo({
+      name: "bare",
+      description: null,
+      topics: [],
+      files: { ...repo().files, hasReadme: false },
+    }),
   ];
 
   it("counts what is missing across the account", () => {
@@ -135,7 +158,11 @@ describe("prioritise", () => {
       repo({ name: "healthy" }),
       repo({ name: "fixable", description: null }),
       // Only a human decision (license) - nothing automatable here.
-      repo({ name: "human-only", license: null, files: { ...repo().files, hasLicenseFile: false } }),
+      repo({
+        name: "human-only",
+        license: null,
+        files: { ...repo().files, hasLicenseFile: false },
+      }),
     ];
     const audit = auditAccount("someone", repos, new Date().toISOString());
     const priority = prioritise(audit, repos);

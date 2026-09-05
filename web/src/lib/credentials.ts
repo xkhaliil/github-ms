@@ -100,7 +100,10 @@ export function setRemember(remember: boolean): void {
   // Re-persist through the new target so the values follow the setting.
   persist(ANTHROPIC_KEY, state.anthropicKey);
   persist(GITHUB_KEY, state.githubToken);
-  persist(IDENTITY_KEY, state.githubIdentity ? JSON.stringify(state.githubIdentity) : null);
+  persist(
+    IDENTITY_KEY,
+    state.githubIdentity ? JSON.stringify(state.githubIdentity) : null,
+  );
 }
 
 export function setAnthropicKey(key: string | null): void {
@@ -124,16 +127,21 @@ export function getGithubIdentity(): GithubIdentity | null {
 }
 
 export function requireAnthropicKey(): string {
-  if (!state.anthropicKey) throw new Error("No Anthropic API key configured. Open Setup and add one.");
+  if (!state.anthropicKey)
+    throw new Error("No Anthropic API key configured. Open Setup and add one.");
   return state.anthropicKey;
 }
 
 export function requireGithubToken(): string {
-  if (!state.githubToken) throw new Error("No GitHub token configured. Open Setup and add one.");
+  if (!state.githubToken)
+    throw new Error("No GitHub token configured. Open Setup and add one.");
   return state.githubToken;
 }
 
-export function getCredentials(): { anthropicKey: string | null; githubToken: string | null } {
+export function getCredentials(): {
+  anthropicKey: string | null;
+  githubToken: string | null;
+} {
   return { anthropicKey: state.anthropicKey, githubToken: state.githubToken };
 }
 
@@ -147,7 +155,10 @@ export function mask(value: string | null): string | null {
 
 export function authStatus(): AuthStatus {
   return {
-    anthropic: { present: Boolean(state.anthropicKey), masked: mask(state.anthropicKey) },
+    anthropic: {
+      present: Boolean(state.anthropicKey),
+      masked: mask(state.anthropicKey),
+    },
     github: {
       present: Boolean(state.githubToken),
       masked: mask(state.githubToken),

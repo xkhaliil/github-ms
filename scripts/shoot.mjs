@@ -50,7 +50,8 @@ await page.evaluate(async (data) => {
     const r = indexedDB.open("gitms", 1);
     r.onupgradeneeded = () => {
       for (const s of ["kv", "proposals", "evidence"]) {
-        if (!r.result.objectStoreNames.contains(s)) r.result.createObjectStore(s);
+        if (!r.result.objectStoreNames.contains(s))
+          r.result.createObjectStore(s);
       }
     };
     r.onsuccess = () => res(r.result);
@@ -68,7 +69,8 @@ await page.evaluate(async (data) => {
   await put("kv", "inventory", data.inventory);
   await put("kv", "audit", data.audit);
   for (const p of data.proposals) await put("proposals", p.name, p);
-  for (const [name, e] of Object.entries(data.evidence)) await put("evidence", name, e);
+  for (const [name, e] of Object.entries(data.evidence))
+    await put("evidence", name, e);
 }, fixtures);
 
 const shots = [
@@ -82,7 +84,10 @@ const shots = [
 for (const [name, hash] of shots) {
   await page.goto(`${BASE}/${hash}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(700);
-  await page.screenshot({ path: path.join(OUT, `${name}.png`), fullPage: true });
+  await page.screenshot({
+    path: path.join(OUT, `${name}.png`),
+    fullPage: true,
+  });
   console.log("shot", name);
 }
 
@@ -95,7 +100,10 @@ for (const [name, hash] of [
 ]) {
   await page.goto(`${BASE}/${hash}`, { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
-  await page.screenshot({ path: path.join(OUT, `${name}.png`), fullPage: true });
+  await page.screenshot({
+    path: path.join(OUT, `${name}.png`),
+    fullPage: true,
+  });
   console.log("shot", name);
 }
 

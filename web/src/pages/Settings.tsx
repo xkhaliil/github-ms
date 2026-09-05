@@ -1,13 +1,32 @@
 import { useEffect, useState } from "react";
 import { navigate } from "../App.js";
-import { clearCredentials, clearLocalData, getSettings, updateSettings } from "../api.js";
-import { Banner, Button, Field, Panel, Select, Spinner, Switch } from "../components/ui.js";
+import {
+  clearCredentials,
+  clearLocalData,
+  getSettings,
+  updateSettings,
+} from "../api.js";
+import {
+  Banner,
+  Button,
+  Field,
+  Panel,
+  Select,
+  Spinner,
+  Switch,
+} from "../components/ui.js";
 import { KeyIcon } from "../components/icons.js";
-import { EFFORTS, MODELS, type AuthStatus, type Settings } from "@shared/types.js";
+import {
+  EFFORTS,
+  MODELS,
+  type AuthStatus,
+  type Settings,
+} from "@shared/types.js";
 
 const MODEL_NOTES: Record<(typeof MODELS)[number], string> = {
   "claude-opus-5": "Best quality. Around $0.18 per repository.",
-  "claude-sonnet-5": "Cheaper and faster. Around $0.07 per repository, with some quality cost.",
+  "claude-sonnet-5":
+    "Cheaper and faster. Around $0.07 per repository, with some quality cost.",
 };
 
 const EFFORT_NOTE =
@@ -29,7 +48,9 @@ export function SettingsPage({
   useEffect(() => {
     void getSettings()
       .then(setSettings)
-      .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
+      .catch((err: unknown) =>
+        setError(err instanceof Error ? err.message : String(err)),
+      );
   }, []);
 
   async function patch(update: Partial<Settings>) {
@@ -43,7 +64,11 @@ export function SettingsPage({
   if (!settings) {
     return (
       <div className="mx-auto max-w-2xl px-6 py-10">
-        {error ? <Banner tone="error">{error}</Banner> : <Spinner label="Loading settings" />}
+        {error ? (
+          <Banner tone="error">{error}</Banner>
+        ) : (
+          <Spinner label="Loading settings" />
+        )}
       </div>
     );
   }
@@ -59,7 +84,9 @@ export function SettingsPage({
           <Field label="Model" hint={MODEL_NOTES[settings.model]}>
             <Select
               value={settings.model}
-              onChange={(e) => void patch({ model: e.target.value as Settings["model"] })}
+              onChange={(e) =>
+                void patch({ model: e.target.value as Settings["model"] })
+              }
             >
               {MODELS.map((m) => (
                 <option key={m} value={m}>
@@ -71,7 +98,9 @@ export function SettingsPage({
           <Field label="Effort" hint={EFFORT_NOTE}>
             <Select
               value={settings.effort}
-              onChange={(e) => void patch({ effort: e.target.value as Settings["effort"] })}
+              onChange={(e) =>
+                void patch({ effort: e.target.value as Settings["effort"] })
+              }
             >
               {EFFORTS.map((e) => (
                 <option key={e} value={e}>
@@ -128,7 +157,11 @@ export function SettingsPage({
 
       <Panel title="Credentials">
         <dl className="divide-y divide-line text-[13px]">
-          <Row label="Anthropic" value={auth.anthropic.masked ?? "not set"} mono />
+          <Row
+            label="Anthropic"
+            value={auth.anthropic.masked ?? "not set"}
+            mono
+          />
           <Row label="GitHub" value={auth.github.masked ?? "not set"} mono />
           <Row
             label="Storage"
@@ -137,7 +170,10 @@ export function SettingsPage({
         </dl>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button onClick={() => navigate({ page: "setup" })} icon={<KeyIcon className="size-3.5" />}>
+          <Button
+            onClick={() => navigate({ page: "setup" })}
+            icon={<KeyIcon className="size-3.5" />}
+          >
             Change keys
           </Button>
           {confirmClear ? (
@@ -168,9 +204,10 @@ export function SettingsPage({
 
       <Panel title="Local data">
         <p className="text-[13px] leading-relaxed text-muted">
-          Your scan, proposals and evidence are stored in this browser only. Nothing was uploaded
-          anywhere, so clearing them here is the whole deletion — but it cannot be undone, and
-          proposals already applied to GitHub stay applied.
+          Your scan, proposals and evidence are stored in this browser only.
+          Nothing was uploaded anywhere, so clearing them here is the whole
+          deletion — but it cannot be undone, and proposals already applied to
+          GitHub stay applied.
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -185,7 +222,9 @@ export function SettingsPage({
                       setWiped(true);
                       setConfirmWipe(false);
                     } catch (err) {
-                      setError(err instanceof Error ? err.message : String(err));
+                      setError(
+                        err instanceof Error ? err.message : String(err),
+                      );
                     }
                   })();
                 }}
@@ -206,7 +245,8 @@ export function SettingsPage({
         {wiped && (
           <div className="mt-4">
             <Banner tone="success">
-              Local data deleted. Run a scan from the Repositories tab to start again.
+              Local data deleted. Run a scan from the Repositories tab to start
+              again.
             </Banner>
           </div>
         )}
@@ -215,11 +255,23 @@ export function SettingsPage({
   );
 }
 
-function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function Row({
+  label,
+  value,
+  mono,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+}) {
   return (
     <div className="flex items-center justify-between gap-4 py-2.5">
       <dt className="text-muted">{label}</dt>
-      <dd className={`truncate text-text ${mono ? "font-mono text-[12.5px]" : ""}`}>{value}</dd>
+      <dd
+        className={`truncate text-text ${mono ? "font-mono text-[12.5px]" : ""}`}
+      >
+        {value}
+      </dd>
     </div>
   );
 }

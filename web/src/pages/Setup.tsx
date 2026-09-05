@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { navigate } from "../App.js";
 import { saveCredentials, testCredential } from "../api.js";
-import { Banner, Button, Field, Input, Spinner, Switch } from "../components/ui.js";
+import {
+  Banner,
+  Button,
+  Field,
+  Input,
+  Spinner,
+  Switch,
+} from "../components/ui.js";
 import { CheckIcon, XIcon } from "../components/icons.js";
 import type { AuthStatus, ConnectionTest } from "@shared/types.js";
 
@@ -10,11 +17,19 @@ type TestState =
   | { status: "testing" }
   | { status: "done"; result: ConnectionTest };
 
-export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Promise<void> }) {
+export function Setup({
+  auth,
+  onSaved,
+}: {
+  auth: AuthStatus;
+  onSaved: () => Promise<void>;
+}) {
   const [anthropicKey, setAnthropicKey] = useState("");
   const [githubToken, setGithubToken] = useState("");
   const [remember, setRemember] = useState(auth.remembered);
-  const [anthropicTest, setAnthropicTest] = useState<TestState>({ status: "idle" });
+  const [anthropicTest, setAnthropicTest] = useState<TestState>({
+    status: "idle",
+  });
   const [githubTest, setGithubTest] = useState<TestState>({ status: "idle" });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -29,14 +44,22 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
 
   async function runTest(kind: "anthropic" | "github") {
     const setState = kind === "anthropic" ? setAnthropicTest : setGithubTest;
-    const typed = kind === "anthropic" ? anthropicKey.trim() : githubToken.trim();
+    const typed =
+      kind === "anthropic" ? anthropicKey.trim() : githubToken.trim();
     setState({ status: "testing" });
     try {
-      setState({ status: "done", result: await testCredential(kind, typed || undefined) });
+      setState({
+        status: "done",
+        result: await testCredential(kind, typed || undefined),
+      });
     } catch (err) {
       setState({
         status: "done",
-        result: { ok: false, kind, error: err instanceof Error ? err.message : String(err) },
+        result: {
+          ok: false,
+          kind,
+          error: err instanceof Error ? err.message : String(err),
+        },
       });
     }
   }
@@ -45,7 +68,11 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
     setSaving(true);
     setSaveError(null);
     try {
-      const payload: { anthropicKey?: string; githubToken?: string; remember?: boolean } = {
+      const payload: {
+        anthropicKey?: string;
+        githubToken?: string;
+        remember?: boolean;
+      } = {
         remember,
       };
       if (anthropicKey.trim()) payload.anthropicKey = anthropicKey.trim();
@@ -71,9 +98,15 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
         <h1 className="text-[22px] font-semibold">Connect your accounts</h1>
         <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
           Both keys stay in this browser. gitms has no server — the page calls{" "}
-          <span className="font-mono text-[12.5px] text-text">api.anthropic.com</span> and{" "}
-          <span className="font-mono text-[12.5px] text-text">api.github.com</span> directly, so
-          your keys are never sent to us and there is nowhere for them to be logged.
+          <span className="font-mono text-[12.5px] text-text">
+            api.anthropic.com
+          </span>{" "}
+          and{" "}
+          <span className="font-mono text-[12.5px] text-text">
+            api.github.com
+          </span>{" "}
+          directly, so your keys are never sent to us and there is nowhere for
+          them to be logged.
         </p>
       </header>
 
@@ -83,7 +116,9 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
           title="Anthropic API key"
           subtitle="Writes the descriptions and READMEs."
           state={anthropicTest}
-          describe={(identity: { model: string }) => `Valid — will use ${identity.model}`}
+          describe={(identity: { model: string }) =>
+            `Valid — will use ${identity.model}`
+          }
         >
           <Field
             label="Key"
@@ -98,7 +133,8 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
                 >
                   console.anthropic.com
                 </a>
-                . Testing is free — it checks authentication without generating anything.
+                . Testing is free — it checks authentication without generating
+                anything.
               </>
             }
           >
@@ -119,7 +155,8 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
             size="sm"
             onClick={() => void runTest("anthropic")}
             disabled={
-              anthropicTest.status === "testing" || (!anthropicKey.trim() && !auth.anthropic.present)
+              anthropicTest.status === "testing" ||
+              (!anthropicKey.trim() && !auth.anthropic.present)
             }
           >
             Test connection
@@ -146,10 +183,11 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
                   target="_blank"
                   rel="noreferrer"
                 >
-                  classic token with the <span className="font-mono">repo</span> scope
+                  classic token with the <span className="font-mono">repo</span>{" "}
+                  scope
                 </a>{" "}
-                is simplest. Fine-grained tokens need Metadata: read, Contents: write and
-                Administration: write.
+                is simplest. Fine-grained tokens need Metadata: read, Contents:
+                write and Administration: write.
               </>
             }
           >
@@ -169,7 +207,10 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
           <Button
             size="sm"
             onClick={() => void runTest("github")}
-            disabled={githubTest.status === "testing" || (!githubToken.trim() && !auth.github.present)}
+            disabled={
+              githubTest.status === "testing" ||
+              (!githubToken.trim() && !auth.github.present)
+            }
           >
             Test connection
           </Button>
@@ -186,9 +227,10 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
 
         {remember && (
           <Banner tone="warn">
-            Stored keys stay in this browser until you clear them. On a shared or public computer,
-            leave this off — and revoke the keys from Anthropic and GitHub if you ever suspect
-            they leaked. Settings → Clear stored keys removes them here.
+            Stored keys stay in this browser until you clear them. On a shared
+            or public computer, leave this off — and revoke the keys from
+            Anthropic and GitHub if you ever suspect they leaked. Settings →
+            Clear stored keys removes them here.
           </Banner>
         )}
         {saveError && <Banner tone="error">{saveError}</Banner>}
@@ -202,7 +244,9 @@ export function Setup({ auth, onSaved }: { auth: AuthStatus; onSaved: () => Prom
             {saving ? "Saving…" : "Save and continue"}
           </Button>
           {(!anthropicOk || !githubOk) && (
-            <span className="text-[12.5px] text-subtle">Test both connections first.</span>
+            <span className="text-[12.5px] text-subtle">
+              Test both connections first.
+            </span>
           )}
         </div>
       </div>
@@ -234,7 +278,9 @@ function CredentialStep({
       <div className="mb-4 flex items-start gap-3">
         <span
           className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border text-[11px] transition-colors ${
-            done ? "border-good/40 bg-good/15 text-good" : "border-line-strong text-subtle"
+            done
+              ? "border-good/40 bg-good/15 text-good"
+              : "border-line-strong text-subtle"
           }`}
         >
           {done ? <CheckIcon className="size-3" /> : index}
@@ -271,7 +317,9 @@ function TestResult({
         <XIcon className="mt-0.5 size-3.5 text-bad" />
         <div>
           <span className="text-bad">{result.error}</span>
-          {result.hint && <span className="mt-0.5 block text-subtle">{result.hint}</span>}
+          {result.hint && (
+            <span className="mt-0.5 block text-subtle">{result.hint}</span>
+          )}
         </div>
       </div>
     );
@@ -282,7 +330,9 @@ function TestResult({
       <CheckIcon className="mt-0.5 size-3.5 text-good" />
       <div>
         <span className="text-good">{describe(result.identity)}</span>
-        {result.warning && <span className="mt-0.5 block text-warn">{result.warning}</span>}
+        {result.warning && (
+          <span className="mt-0.5 block text-warn">{result.warning}</span>
+        )}
       </div>
     </div>
   );

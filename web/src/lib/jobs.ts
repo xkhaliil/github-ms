@@ -86,18 +86,25 @@ export class Job {
   }
 
   finishStep(repo: string, state: JobStep["state"], message?: string): void {
-    this.updateStep(repo, message === undefined ? { state } : { state, message });
+    this.updateStep(
+      repo,
+      message === undefined ? { state } : { state, message },
+    );
     this.emit({ completed: this.snapshot.completed + 1 });
   }
 
   private updateStep(repo: string, patch: Partial<JobStep>): void {
     this.emit({
-      steps: this.snapshot.steps.map((s) => (s.repo === repo ? { ...s, ...patch } : s)),
+      steps: this.snapshot.steps.map((s) =>
+        s.repo === repo ? { ...s, ...patch } : s,
+      ),
     });
   }
 
   recordUsage(delta: Partial<Omit<UsageTotals, "estimatedCostUsd">>): void {
-    this.emit({ usage: addUsage(this.snapshot.usage, delta, this.model, this.batch) });
+    this.emit({
+      usage: addUsage(this.snapshot.usage, delta, this.model, this.batch),
+    });
   }
 
   addPlannedCall(call: PlannedCall): void {
@@ -124,7 +131,9 @@ const jobs = new Map<string, Job>();
 let active: Job | null = null;
 
 export function currentJob(): Job | null {
-  return active && ["queued", "running"].includes(active.get().state) ? active : null;
+  return active && ["queued", "running"].includes(active.get().state)
+    ? active
+    : null;
 }
 
 export function getJob(id: string): Job | undefined {
@@ -144,7 +153,10 @@ export function startJob(
   batch: boolean,
   run: (job: Job) => Promise<void>,
 ): Job {
-  if (currentJob()) throw new Error("A job is already running. Wait for it to finish or cancel it.");
+  if (currentJob())
+    throw new Error(
+      "A job is already running. Wait for it to finish or cancel it.",
+    );
 
   const job = new Job(kind, model, batch);
   jobs.set(job.id, job);

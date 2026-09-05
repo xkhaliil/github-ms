@@ -136,7 +136,8 @@ const { auditAccount } = await import("../core/analyze/hygiene.ts");
 const proposalMeta = {
   name: "raycast-timezones",
   status: "pending",
-  description: "Raycast extension that shows the current time for a saved list of teammates",
+  description:
+    "Raycast extension that shows the current time for a saved list of teammates",
   topics: ["raycast", "raycast-extension", "typescript", "timezones"],
   confidence: "high",
   reasoning:
@@ -199,7 +200,13 @@ const evidence = {
     {
       file: "package.json",
       ecosystem: "npm",
-      dependencies: ["@raycast/api", "react", "typescript", "@types/react", "eslint"],
+      dependencies: [
+        "@raycast/api",
+        "react",
+        "typescript",
+        "@types/react",
+        "eslint",
+      ],
     },
   ],
   existingReadme: null,

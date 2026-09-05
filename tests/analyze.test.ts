@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { parseManifest } from "../core/analyze/manifests.js";
-import { isTooThin, pickEntrypoints, trimTree } from "../core/analyze/fingerprint.js";
+import {
+  isTooThin,
+  pickEntrypoints,
+  trimTree,
+} from "../core/analyze/fingerprint.js";
 import { deriveFileFacts } from "../core/github/repos.js";
 import type { Evidence } from "../core/analyze/fingerprint.js";
 
@@ -74,7 +78,12 @@ describe("parseManifest", () => {
 describe("trimTree", () => {
   it("drops vendored directories that say nothing about the project", () => {
     const { paths } = trimTree({
-      paths: ["src/index.ts", "node_modules/react/index.js", "dist/bundle.js", "README.md"],
+      paths: [
+        "src/index.ts",
+        "node_modules/react/index.js",
+        "dist/bundle.js",
+        "README.md",
+      ],
       truncated: false,
       ok: true,
     });
@@ -100,7 +109,11 @@ describe("trimTree", () => {
 
 describe("pickEntrypoints", () => {
   it("prefers conventional entry points", () => {
-    const picked = pickEntrypoints(["src/utils/helper.ts", "src/index.ts", "docs/guide.md"]);
+    const picked = pickEntrypoints([
+      "src/utils/helper.ts",
+      "src/index.ts",
+      "docs/guide.md",
+    ]);
     expect(picked[0]).toBe("src/index.ts");
   });
 
@@ -139,12 +152,18 @@ describe("deriveFileFacts", () => {
   });
 
   it("does not mistake a nested readme for a root one", () => {
-    const facts = deriveFileFacts({ paths: ["docs/README.md"], truncated: false, ok: true });
+    const facts = deriveFileFacts({
+      paths: ["docs/README.md"],
+      truncated: false,
+      ok: true,
+    });
     expect(facts.hasReadme).toBe(false);
   });
 
   it("marks an unreadable tree as incomplete", () => {
-    expect(deriveFileFacts({ paths: [], truncated: false, ok: false }).incomplete).toBe(true);
+    expect(
+      deriveFileFacts({ paths: [], truncated: false, ok: false }).incomplete,
+    ).toBe(true);
   });
 });
 
@@ -179,14 +198,21 @@ describe("isTooThin", () => {
   });
 
   it("accepts a repo once there is code to read", () => {
-    expect(isTooThin({ ...base, entrypoints: [{ path: "main.py", text: "print(1)" }] })).toBe(false);
+    expect(
+      isTooThin({
+        ...base,
+        entrypoints: [{ path: "main.py", text: "print(1)" }],
+      }),
+    ).toBe(false);
   });
 
   it("accepts a repo with a manifest even when no entry point was readable", () => {
     expect(
       isTooThin({
         ...base,
-        manifests: [{ file: "package.json", ecosystem: "npm", dependencies: ["react"] }],
+        manifests: [
+          { file: "package.json", ecosystem: "npm", dependencies: ["react"] },
+        ],
       }),
     ).toBe(false);
   });
