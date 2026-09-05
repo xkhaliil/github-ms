@@ -1,0 +1,13 @@
+node_modules/
+web/dist/
+*.tsbuildinfo
+
+# Generated proposals, evidence and audit results. Never contains credentials,
+# but it is your account's data - keep it out of version control.
+.gitms-data/
+
+# Never commit credentials.
+.env
+.env.*
+credentials.json
+.screenshots/

@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="../brand/favicon.svg" />
+<meta name="description" content="gitms reads what your repositories actually do, writes the descriptions, topics and READMEs they are missing, and shows you every word before anything is pushed." />
+<meta property="og:title" content="gitms" />
+<meta property="og:description" content="Your repositories, described from the code." />
+<meta property="og:image" content="../brand/og-image.png" />
+<title>gitms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" />
+<style>
+/*
+ * The palette, spacing and hairline language are inherited from the product's
+ * own token set (web/src/index.css) rather than invented for marketing - the
+ * page should look like the thing it is selling.
+ *
+ * Single dark theme, deliberately: the same decision the product makes, and
+ * every colour below is painted explicitly so the page holds on any host ground.
+ */
+:root {
+  --ink: #08080A;
+  --surface: #0E0E11;
+  --raised: #141418;
+  --line: #212127;
+  --line-strong: #2E2E36;
+  --paper: #F2F2F4;
+  --muted: #9A9AA5;
+  --subtle: #6A6A75;
+  --signal: #6D8FFF;
+  --good: #3ECF8E;
+  --warn: #E5A03A;
+  --bad: #F0616D;
+
+  --sans: ui-sans-serif, -apple-system, "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  /* The one webfont. "gitms" is git manuscripts - the serif is the name,
+     set in type. It appears only at display sizes. */
+  --display: "Newsreader", "Iowan Old Style", Georgia, serif;
+
+  --col: 660px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.65;
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: var(--col); margin: 0 auto; padding: 0 24px; }
+
+a { color: var(--signal); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--signal) 70%, transparent);
+  outline-offset: 3px;
+  border-radius: 5px;
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------- header --- */
+
+header.bar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--ink) 85%, transparent);
+  backdrop-filter: blur(12px);
+}
+.lockup { display: inline-flex; align-items: center; gap: 9px; }
+.lockup svg { width: 22px; height: 22px; display: block; }
+.wordmark { font-size: 15px; font-weight: 600; letter-spacing: -0.03em; }
+.wordmark .ms { color: var(--signal); }
+.bar nav { margin-left: auto; display: flex; gap: 18px; font-size: 13.5px; }
+.bar nav a { color: var(--muted); }
+.bar nav a:hover { color: var(--paper); text-decoration: none; }
+
+/* --------------------------------------------------------------- hero --- */
+
+.hero { padding: 88px 0 64px; }
+.hero h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(38px, 6.2vw, 58px);
+  line-height: 1.06;
+  letter-spacing: -0.022em;
+  margin: 0 0 22px;
+  text-wrap: balance;
+}
+.hero h1 em { font-style: italic; color: var(--signal); }
+.hero .lede {
+  font-size: 17px; line-height: 1.6; color: var(--muted);
+  margin: 0 0 32px; max-width: 56ch;
+}
+
+.cmd {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid var(--line); background: var(--surface);
+  border-radius: 9px; padding: 12px 15px;
+  font-family: var(--mono); font-size: 13.5px;
+  overflow-x: auto; white-space: pre;
+}
+.cmd .prompt { color: var(--subtle); user-select: none; }
+.hero .links { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 18px; font-size: 14px; }
+.hero .links .note { color: var(--subtle); }
+
+/* ------------------------------------------------------------ sections --- */
+
+section { padding: 56px 0; border-top: 1px solid var(--line); }
+section h2 {
+  font-family: var(--display);
+  font-weight: 400; font-size: 29px; line-height: 1.2;
+  letter-spacing: -0.018em; margin: 0 0 12px; text-wrap: balance;
+}
+section p { margin: 0 0 16px; color: var(--muted); max-width: 62ch; }
+section p strong { color: var(--paper); font-weight: 500; }
+.eyebrow {
+  font-size: 11.5px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--subtle); margin: 0 0 14px;
+}
+
+/* --------------------------------------------------- product specimens --- */
+
+/* Fragments lifted from the real interface. They carry the product's own
+   vocabulary - the health meter, the D/R/T/L slots - rather than a stock
+   screenshot frame. */
+.specimen {
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); overflow: hidden; margin: 26px 0;
+}
+.specimen-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 14px; border-bottom: 1px solid var(--line);
+  font-size: 11.5px; color: var(--subtle);
+}
+.rows { display: grid; }
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 74px 88px;
+  align-items: center; gap: 14px;
+  padding: 11px 14px; border-bottom: 1px solid var(--line);
+  font-size: 13.5px;
+}
+.row:last-child { border-bottom: 0; }
+.row .name { font-weight: 500; }
+.row .desc { display: block; font-size: 12px; color: var(--subtle); }
+.row .desc.none { font-style: italic; }
+
+.meter { display: inline-flex; align-items: center; gap: 7px; }
+.meter .n { width: 20px; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; }
+.meter .track { height: 3px; width: 44px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.meter .fill { display: block; height: 100%; border-radius: 999px; }
+.meter.low .n { color: var(--bad); } .meter.low .fill { background: var(--bad); }
+.meter.mid .n { color: var(--warn); } .meter.mid .fill { background: var(--warn); }
+.meter.high .n { color: var(--good); } .meter.high .fill { background: var(--good); }
+
+.slots { display: flex; gap: 4px; }
+.slots span {
+  display: grid; place-items: center; width: 18px; height: 18px;
+  border-radius: 4px; font-family: var(--mono); font-size: 10.5px; line-height: 1;
+  color: var(--line-strong);
+}
+.slots .miss { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); }
+.slots .warnmiss { background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn); }
+
+.legend { display: flex; gap: 14px; font-size: 11.5px; color: var(--subtle); margin-top: 12px; flex-wrap: wrap; }
+.legend code { font-family: var(--mono); color: var(--line-strong); }
+
+/* --------------------------------------------------------- before/after --- */
+
+.ba { display: grid; gap: 14px; margin: 26px 0; }
+@media (min-width: 720px) { .ba { grid-template-columns: 1fr 1fr; } }
+.ba .panel {
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface); padding: 15px;
+}
+.ba .panel.after { border-color: color-mix(in srgb, var(--signal) 35%, var(--line)); }
+.ba .tag {
+  font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--subtle); display: block; margin-bottom: 10px;
+}
+.ba .panel.after .tag { color: var(--signal); }
+.ba .repo { font-weight: 600; font-size: 14.5px; margin-bottom: 5px; }
+.ba .line { font-size: 13px; color: var(--muted); line-height: 1.55; }
+.ba .line.empty { color: var(--subtle); font-style: italic; }
+.topics { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
+.topics span {
+  border: 1px solid var(--line); background: var(--raised); border-radius: 6px;
+  padding: 2px 7px; font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+}
+
+/* --------------------------------------------------------------- steps --- */
+
+/* Numbered because these genuinely run in order - each step needs the one
+   before it. */
+ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 26px 0 0; display: grid; gap: 2px; }
+ol.steps li {
+  counter-increment: s;
+  display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 14px;
+  padding: 14px 0; border-top: 1px solid var(--line);
+}
+ol.steps li:first-child { border-top: 0; }
+ol.steps li::before {
+  content: counter(s);
+  font-family: var(--mono); font-size: 12px; color: var(--subtle);
+  padding-top: 2px;
+}
+ol.steps h3 { margin: 0 0 3px; font-size: 14.5px; font-weight: 600; }
+ol.steps p { margin: 0; font-size: 13.5px; color: var(--muted); }
+ol.steps .free { color: var(--good); font-size: 12px; }
+
+/* --------------------------------------------------------------- guards --- */
+
+.guards { display: grid; gap: 2px; margin: 24px 0; }
+.guard { padding: 16px 0; border-top: 1px solid var(--line); }
+.guard:first-child { border-top: 0; }
+.guard h3 { margin: 0 0 5px; font-size: 14.5px; font-weight: 600; }
+.guard p { margin: 0; font-size: 13.5px; }
+
+.quote {
+  border-left: 2px solid var(--line-strong);
+  padding: 4px 0 4px 16px; margin: 24px 0;
+}
+.quote .label { font-size: 11.5px; color: var(--subtle); margin-bottom: 6px; }
+.quote .body { font-size: 13.5px; color: var(--muted); font-family: var(--mono); line-height: 1.6; }
+
+/* ---------------------------------------------------------------- table --- */
+
+.tbl { width: 100%; border-collapse: collapse; margin: 22px 0; font-size: 13.5px; }
+.tbl th, .tbl td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.tbl th { font-size: 11.5px; font-weight: 500; color: var(--subtle); }
+.tbl td:last-child, .tbl th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl .model { font-family: var(--mono); font-size: 12.5px; }
+
+/* ----------------------------------------------------------------- list --- */
+
+ul.checks { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 11px; }
+ul.checks li {
+  display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 11px;
+  font-size: 13.5px; color: var(--muted);
+}
+ul.checks svg { width: 15px; height: 15px; margin-top: 3px; color: var(--good); }
+ul.checks b { color: var(--paper); font-weight: 500; }
+
+/* --------------------------------------------------------------- footer --- */
+
+footer {
+  border-top: 1px solid var(--line); padding: 34px 0 60px;
+  font-size: 13px; color: var(--subtle);
+}
+footer .row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+footer .row .spacer { margin-left: auto; }
+
+code.inline {
+  font-family: var(--mono); font-size: 0.87em;
+  background: var(--raised); border: 1px solid var(--line);
+  border-radius: 4px; padding: 1px 5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a href="#top" class="lockup" aria-label="gitms">
+    <svg viewBox="0 0 32 32" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="#6D8FFF"/>
+      <circle cx="9.75" cy="9.25" r="2.75" fill="#08080A"/>
+      <rect x="15.5" y="7.5" width="9.5" height="3.5" rx="1.75" fill="#08080A"/>
+      <rect x="7" y="15.5" width="18" height="3.5" rx="1.75" fill="#08080A"/>
+      <rect x="7" y="21.5" width="11" height="3.5" rx="1.75" fill="#08080A" opacity="0.8"/>
+    </svg>
+    <span class="wordmark">git<span class="ms">ms</span></span>
+  </a>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="#honest">Honesty</a>
+    <a href="#cost">Cost</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <div class="wrap hero">
+    <h1>Your repositories,<br />described <em>from the code</em>.</h1>
+    <p class="lede">
+      gitms reads what your projects actually do, writes the descriptions, topics and READMEs
+      they are missing, and shows you every word before anything is pushed.
+    </p>
+    <div class="cmd"><span class="prompt">$</span>npm install &amp;&amp; npm run dev</div>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#install">Install</a>
+      <span class="note">Runs on your machine · MIT licensed</span>
+    </div>
+  </div>
+
+  <section class="wrap" id="problem">
+    <p class="eyebrow">The problem</p>
+    <h2>An unlabelled repo grid reads as abandoned work.</h2>
+    <p>
+      Whatever the code is like. A visitor sees three things before they see any of it: the
+      one-line description under the repo name, the topic tags, and the README that loads when
+      they click in. gitms scores every repository on exactly those, worst first.
+    </p>
+
+    <div class="specimen">
+      <div class="specimen-head"><span>8 repositories · sorted by health</span><span>example data</span></div>
+      <div class="rows">
+        <div class="row">
+          <span><span class="name">todo-app-tutorial</span><span class="desc none">no description</span></span>
+          <span class="meter low"><span class="n">10</span><span class="track"><span class="fill" style="width:10%"></span></span></span>
+          <span class="slots"><span class="miss">D</span><span class="miss">R</span><span class="warnmiss">T</span><span class="warnmiss">L</span></span>
+        </div>
+        <div class="row">
+          <span><span class="name">portfolio-site</span><span class="desc none">no description</span></span>
+          <span class="meter low"><span class="n">17</span><span class="track"><span class="fill" style="width:17%"></span></span></span>
+          <span class="slots"><span class="miss">D</span><span class="miss">R</span><span class="warnmiss">T</span><span class="warnmiss">L</span></span>
+        </div>
+        <div class="row">
+          <span><span class="name">wasm-image-lab</span><span class="desc none">no description</span></span>
+          <span class="meter low"><span class="n">40</span><span class="track"><span class="fill" style="width:40%"></span></span></span>
+          <span class="slots"><span class="miss">D</span><span class="miss">R</span><span>T</span><span class="warnmiss">L</span></span>
+        </div>
+        <div class="row">
+          <span><span class="name">dotfiles</span><span class="desc">Shell configuration, prompts and aliases I carry between machines</span></span>
+          <span class="meter high"><span class="n">90</span><span class="track"><span class="fill" style="width:90%"></span></span></span>
+          <span class="slots"><span>D</span><span>R</span><span>T</span><span class="warnmiss">L</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><code>D</code> description</span><span><code>R</code> readme</span>
+      <span><code>T</code> topics</span><span><code>L</code> license</span>
+    </div>
+  </section>
+
+  <section class="wrap" id="writes">
+    <p class="eyebrow">What it writes</p>
+    <h2>A description you would have written, if you had the hour.</h2>
+    <p>
+      Built from the file tree, the parsed dependency manifests, the entry-point source and the
+      last twenty commit messages — not from the repository's name.
+    </p>
+
+    <div class="ba">
+      <div class="panel">
+        <span class="tag">Before</span>
+        <div class="repo">raycast-timezones</div>
+        <div class="line empty">No description, no topics, no README.</div>
+      </div>
+      <div class="panel after">
+        <span class="tag">After — pending your review</span>
+        <div class="repo">raycast-timezones</div>
+        <div class="line">Raycast extension that shows the current time for a saved list of teammates</div>
+        <div class="topics"><span>raycast</span><span>raycast-extension</span><span>typescript</span><span>timezones</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="how">
+    <p class="eyebrow">How it works</p>
+    <h2>Five steps, and you can stop at any of them.</h2>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <h3>Scan</h3>
+          <p>Lists your repositories and reads one file tree each. Read-only. <span class="free">Free.</span></p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Audit</h3>
+          <p>Rule-based checks score every repo and produce a “fix these first” list. No model involved. <span class="free">Free.</span></p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Generate</h3>
+          <p>Builds an evidence bundle per repo and asks Claude for a description, topics and a README.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Review</h3>
+          <p>Every proposal is editable, side by side with the exact evidence the model was given.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <h3>Apply</h3>
+          <p>Writes only what you approved. Dry run is on by default and prints the exact API calls without sending them.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="wrap" id="honest">
+    <p class="eyebrow">The part that matters</p>
+    <h2>Nothing is invented.</h2>
+    <p>
+      The failure mode worth caring about is a confident README describing features a project
+      does not have. That is your name on the profile. Three things guard against it.
+    </p>
+
+    <div class="guards">
+      <div class="guard">
+        <h3>It only sees the evidence</h3>
+        <p>The model is given the file tree, the real dependencies, the entry-point source and the commit history — and is instructed to describe nothing it cannot point at.</p>
+      </div>
+      <div class="guard">
+        <h3>Output is schema-validated</h3>
+        <p>Against GitHub's actual limits, before you ever see it: 350-character descriptions, three to six lowercase topics. Invalid output is rejected and retried, never surfaced.</p>
+      </div>
+      <div class="guard">
+        <h3>It says what it did not know</h3>
+        <p>Every proposal carries a confidence rating and lists what it could not determine. Repositories with too little code to describe honestly are skipped and reported, not padded.</p>
+      </div>
+    </div>
+
+    <div class="quote">
+      <div class="label">From a real proposal — the <code class="inline">unknowns</code> field</div>
+      <div class="body">“Whether the extension was ever published to the Raycast store — nothing in the repo says.”</div>
+    </div>
+
+    <p>
+      <strong>Read the generated README before approving it.</strong> That is the step that makes
+      this safe, and gitms is built so that step takes a minute rather than an afternoon.
+    </p>
+  </section>
+
+  <section class="wrap" id="cost">
+    <p class="eyebrow">Cost</p>
+    <h2>You bring the API key. You see the bill before you spend it.</h2>
+    <p>
+      Measured per repository, on roughly 20K tokens of evidence in and 3K of README out. The
+      estimate appears before a run; the actual spend appears during it.
+    </p>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>Model</th><th>Per repo</th><th>40 repos</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="model">claude-opus-5</td><td>≈ $0.18</td><td>≈ $7</td></tr>
+        <tr><td class="model">claude-sonnet-5</td><td>≈ $0.07</td><td>≈ $3</td></tr>
+        <tr><td class="model">batch mode</td><td>half of either</td><td>—</td></tr>
+        <tr><td class="model">mock mode</td><td>$0.00</td><td>$0.00</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      The system prompt is identical for every repository in a run and marked as a cache
+      breakpoint, so every request after the first reads it from cache. Mock mode runs the whole
+      pipeline without calling the API — use it once before spending anything.
+    </p>
+  </section>
+
+  <section class="wrap" id="safety">
+    <p class="eyebrow">Safety</p>
+    <h2>It is careful in the places where being wrong is expensive.</h2>
+
+    <ul class="checks">
+      <li>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5 6.2 11.5 13 4.5"/></svg>
+        <span><b>Only approved proposals are written.</b> Never a pending one, never a skipped one, whatever the request asks for.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5 6.2 11.5 13 4.5"/></svg>
+        <span><b>No silent overwrites.</b> README commits pass the current file SHA, so a change made on GitHub since the scan fails cleanly with a 409. There is no force path.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5 6.2 11.5 13 4.5"/></svg>
+        <span><b>Existing READMEs are backed up</b> locally before being replaced, and applying is idempotent — an applied repo is skipped on re-runs.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5 6.2 11.5 13 4.5"/></svg>
+        <span><b>Your keys stay on your machine.</b> Held in memory by default and gone when the server stops. They are sent only to the Anthropic and GitHub APIs, never written into the project folder, never logged.</span>
+      </li>
+      <li>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5 6.2 11.5 13 4.5"/></svg>
+        <span><b>The server binds to loopback only</b>, validates the request origin, and requires a per-process session token on every mutating request.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="wrap" id="install">
+    <p class="eyebrow">Install</p>
+    <h2>Two commands, then two keys.</h2>
+    <div class="cmd"><span class="prompt">$</span>npm install</div>
+    <div class="cmd"><span class="prompt">$</span>npm run dev</div>
+    <p style="margin-top:18px">
+      A browser opens at <code class="inline">127.0.0.1:5123</code>. It asks for an Anthropic API
+      key and a GitHub token with the <code class="inline">repo</code> scope, and tests both
+      before letting you continue — testing the Anthropic key costs nothing, because it checks
+      authentication without generating anything.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap row">
+    <span class="lockup">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#6D8FFF"/>
+        <circle cx="9.75" cy="9.25" r="2.75" fill="#08080A"/>
+        <rect x="15.5" y="7.5" width="9.5" height="3.5" rx="1.75" fill="#08080A"/>
+        <rect x="7" y="15.5" width="18" height="3.5" rx="1.75" fill="#08080A"/>
+        <rect x="7" y="21.5" width="11" height="3.5" rx="1.75" fill="#08080A" opacity="0.8"/>
+      </svg>
+      <span class="wordmark">git<span class="ms">ms</span></span>
+    </span>
+    <span class="spacer">MIT licensed</span>
+    <span>Built with the Claude API</span>
+  </div>
+</footer>
+
+</body>
+</html>

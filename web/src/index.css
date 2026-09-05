@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+/*
+ * One dark theme, tuned properly, rather than two mediocre ones. This is a local
+ * developer tool that runs next to a terminal - it belongs in the dark, and a
+ * single surface set keeps every contrast pair verifiable.
+ *
+ * The palette is near-neutral on purpose: colour is reserved for meaning
+ * (severity, state, the one accent), never decoration.
+ */
+@theme {
+  /* Surfaces - four steps is enough for real depth without drop shadows. */
+  --color-bg: #08080a;
+  --color-surface: #0e0e11;
+  --color-raised: #141418;
+  --color-hover: #1a1a1f;
+
+  /* Hairlines. Borders do the structural work that shadows would otherwise. */
+  --color-line: #212127;
+  --color-line-strong: #2e2e36;
+
+  /* Text - three weights of emphasis, all AA against --color-bg. */
+  --color-text: #f2f2f4;
+  --color-muted: #9a9aa5;
+  --color-subtle: #6a6a75;
+
+  --color-accent: #6d8fff;
+  --color-accent-soft: #1d2340;
+  --color-good: #3ecf8e;
+  --color-warn: #e5a03a;
+  --color-bad: #f0616d;
+
+  --radius-panel: 10px;
+  --radius-control: 7px;
+
+  --font-sans:
+    ui-sans-serif, -apple-system, "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings set tighter than body text - the single strongest signal of
+   typographic care at small sizes. */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.021em;
+}
+
+/* Numbers in tables and stats must not jitter as they update. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+
+/* One focus treatment everywhere, visible only for keyboard users. */
+:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-accent) 70%, transparent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+/* Slim scrollbars - the default Windows bars are visually louder than anything
+   else on the page. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-subtle);
+  background-clip: content-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * README preview. Tailwind's reset strips heading and list styling, so the
+ * preview needs its own scale - tuned to read like GitHub renders it, since
+ * that is where this text is going.
+ */
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+.markdown-body > :first-child {
+  margin-top: 0;
+}
+.markdown-body h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.6rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--color-line);
+}
+.markdown-body h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 1.75rem 0 0.6rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--color-line);
+}
+.markdown-body h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1.4rem 0 0.5rem;
+}
+.markdown-body p {
+  margin: 0.75rem 0;
+}
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.75rem 0 0.75rem 1.4rem;
+}
+.markdown-body ul {
+  list-style: disc;
+}
+.markdown-body ol {
+  list-style: decimal;
+}
+.markdown-body li {
+  margin: 0.2rem 0;
+}
+.markdown-body a {
+  color: var(--color-accent);
+  text-underline-offset: 2px;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--color-accent) 40%, transparent);
+}
+.markdown-body a:hover {
+  text-decoration-color: currentColor;
+}
+.markdown-body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-raised);
+  border: 1px solid var(--color-line);
+  padding: 0.1rem 0.32rem;
+  border-radius: 4px;
+}
+.markdown-body pre {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.9rem 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.markdown-body pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+.markdown-body blockquote {
+  border-left: 2px solid var(--color-line-strong);
+  padding-left: 0.9rem;
+  color: var(--color-muted);
+  margin: 0.9rem 0;
+}
+.markdown-body hr {
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  margin: 1.5rem 0;
+}
+.markdown-body table {
+  border-collapse: collapse;
+  margin: 0.9rem 0;
+  display: block;
+  overflow-x: auto;
+  font-size: 13px;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--color-line);
+  padding: 0.4rem 0.7rem;
+  text-align: left;
+}
+.markdown-body th {
+  background: var(--color-raised);
+  font-weight: 600;
+}
+.markdown-body img {
+  max-width: 100%;
+  border-radius: 6px;
+}
+/* Badge rows render as consecutive images; keep them on one line. */
+.markdown-body p > img + img {
+  margin-left: 0.3rem;
+}
