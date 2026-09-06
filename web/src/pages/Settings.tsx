@@ -16,10 +16,13 @@ import {
   Switch,
 } from "../components/ui.js";
 import { KeyIcon } from "../components/icons.js";
+import { bridgeStatus } from "../lib/bridge.js";
 import {
   EFFORTS,
   MODELS,
+  PROVIDERS,
   type AuthStatus,
+  type Provider,
   type Settings,
 } from "@shared/types.js";
 
@@ -32,6 +35,30 @@ const MODEL_NOTES: Record<(typeof MODELS)[number], string> = {
 const EFFORT_NOTE =
   "How much reasoning to spend per repository. Medium is a good default; high helps on repos with sparse or confusing code.";
 
+const PROVIDER_LABELS: Record<Provider, string> = {
+  api: "Anthropic API key",
+  "claude-code": "Claude Code CLI (subscription)",
+};
+
+/**
+ * The CLI option is only real when the dev server is serving the bridge and the
+ * binary is on this machine, so the hint reports what was actually detected
+ * rather than describing a capability the run would then fail on.
+ */
+function providerHint(
+  provider: Provider,
+  bridge: { available: boolean; binary: string | null } | null,
+): string {
+  if (provider === "api") {
+    return "Calls api.anthropic.com directly with your key. Billed against API credits, which a Claude subscription does not fund.";
+  }
+  if (bridge === null) return "Checking for a local Claude Code CLI…";
+  if (!bridge.available) {
+    return "Not available here. This needs the local dev server (npm run dev) and the Claude Code CLI installed — a deployed copy of this site cannot run one.";
+  }
+  return `Runs generation through ${bridge.binary}, billed to your Claude subscription instead of API credits. No API key needed.`;
+}
+
 export function SettingsPage({
   auth,
   onAuthChange,
@@ -40,6 +67,10 @@ export function SettingsPage({
   onAuthChange: () => Promise<void>;
 }) {
   const [settings, setSettings] = useState<Settings | null>(null);
+  const [bridge, setBridge] = useState<{
+    available: boolean;
+    binary: string | null;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmWipe, setConfirmWipe] = useState(false);
@@ -51,6 +82,8 @@ export function SettingsPage({
       .catch((err: unknown) =>
         setError(err instanceof Error ? err.message : String(err)),
       );
+    // Never throws - an absent bridge is reported as unavailable, not as an error.
+    void bridgeStatus().then(setBridge);
   }, []);
 
   async function patch(update: Partial<Settings>) {
@@ -80,6 +113,23 @@ export function SettingsPage({
       {error && <Banner tone="error">{error}</Banner>}
 
       <Panel title="Generation">
+        <div className="mb-4">
+          <Field label="Provider" hint={providerHint(settings.provider, bridge)}>
+            <Select
+              value={settings.provider}
+              onChange={(e) =>
+                void patch({ provider: e.target.value as Settings["provider"] })
+              }
+            >
+              {PROVIDERS.map((p) => (
+                <option key={p} value={p}>
+                  {PROVIDER_LABELS[p]}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </div>
+
         <div className="grid items-start gap-4 sm:grid-cols-2">
           <Field label="Model" hint={MODEL_NOTES[settings.model]}>
             <Select

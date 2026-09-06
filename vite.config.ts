@@ -3,15 +3,21 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath } from "node:url";
 import { HOST, WEB_PORT } from "./shared/constants.js";
+import { claudeBridge } from "./scripts/claude-bridge.js";
 
 /**
  * The app is a static bundle: it talks straight to api.github.com and
  * api.anthropic.com with the user's own keys, so there is no API to proxy and
  * nothing server-side to deploy.
+ *
+ * The one exception is the Claude Code bridge, which is dev-only by nature - it
+ * spawns a local process, which a deployed page cannot do. The build is
+ * unaffected: `claudeBridge()` declares `apply: "serve"`, so it contributes
+ * nothing to `web/dist`.
  */
 export default defineConfig({
   root: "web",
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), claudeBridge()],
   resolve: {
     alias: {
       "@shared": fileURLToPath(new URL("./shared", import.meta.url)),

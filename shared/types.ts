@@ -187,6 +187,12 @@ export interface JobSnapshot {
   steps: JobStep[];
   usage: UsageTotals;
   error: string | null;
+  /**
+   * Which provider ran the job. On `claude-code` the usage figures are real but
+   * the dollar total is only a list-price equivalent, since the run was billed to
+   * a subscription - the run view says so rather than reporting money spent.
+   */
+  provider: Provider;
   /** Populated for apply jobs run with dryRun: the calls that would have been made. */
   plannedCalls?: PlannedCall[];
 }
@@ -206,7 +212,18 @@ export type ModelId = (typeof MODELS)[number];
 export const EFFORTS = ["low", "medium", "high"] as const;
 export type Effort = (typeof EFFORTS)[number];
 
+/**
+ * Where generation gets its model from. `api` is the deployable path: the browser
+ * calls api.anthropic.com with the visitor's own key, billed against API credits.
+ * `claude-code` runs the local Claude Code CLI instead, which bills against a
+ * Claude subscription - it needs the dev server's bridge, so it is unavailable on
+ * a deployed copy of the site.
+ */
+export const PROVIDERS = ["api", "claude-code"] as const;
+export type Provider = (typeof PROVIDERS)[number];
+
 export interface Settings {
+  provider: Provider;
   model: ModelId;
   effort: Effort;
   /** Route generation through the Batch API at 50% cost. */
@@ -221,6 +238,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
+  provider: "api",
   model: "claude-opus-5",
   effort: "medium",
   batchMode: false,

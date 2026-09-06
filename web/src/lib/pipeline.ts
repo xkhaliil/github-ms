@@ -32,6 +32,7 @@ import {
   writeProposal,
   type Inventory,
 } from "./store.js";
+import { bridgeStatus, generateViaBridge } from "./bridge.js";
 import type { Job } from "./jobs.js";
 import type { RepoProposal, RepoSummary } from "@shared/types.js";
 
@@ -92,14 +93,37 @@ export interface GenerateRequest {
   hint?: string;
 }
 
+/**
+ * The bridge only exists in the dev server, so the two ways this fails are worth
+ * telling apart: a deployed build has no endpoint at all, and a local one can
+ * still be missing the CLI it shells out to.
+ */
+async function requireBridge(): Promise<void> {
+  const status = await bridgeStatus();
+  if (status.available) return;
+
+  throw new Error(
+    status.binary === null
+      ? "Claude Code generation needs the local dev server (`npm run dev`) and the Claude Code CLI on this machine. " +
+        "Install the CLI, or switch Settings back to the Anthropic API key."
+      : "The Claude Code bridge is unavailable.",
+  );
+}
+
 export async function runGenerate(
   job: Job,
   request: GenerateRequest,
 ): Promise<void> {
   const client = gh();
   const settings = await readSettings();
+  const viaClaudeCode = !settings.mockAi && settings.provider === "claude-code";
+
   // Fail before the loop rather than on the first repo, so nothing is half-run.
-  const apiKey = settings.mockAi ? "" : requireAnthropicKey();
+  // Each provider has its own precondition, and neither is worth discovering ten
+  // repos in: the API path needs a key, the CLI path needs the local bridge.
+  const apiKey = settings.mockAi || viaClaudeCode ? "" : requireAnthropicKey();
+  if (viaClaudeCode) await requireBridge();
+
   const inventory = await readInventory();
   if (!inventory) throw new Error("No scan found. Run a scan first.");
 
@@ -153,13 +177,19 @@ export async function runGenerate(
         continue;
       }
 
-      const result = await generateProposal(evidence, {
-        apiKey,
-        model: settings.model,
-        effort: settings.effort,
-        mock: settings.mockAi,
-        ...(request.hint ? { hint: request.hint } : {}),
-      });
+      const result = viaClaudeCode
+        ? await generateViaBridge(evidence, {
+            model: settings.model,
+            effort: settings.effort,
+            ...(request.hint ? { hint: request.hint } : {}),
+          })
+        : await generateProposal(evidence, {
+            apiKey,
+            model: settings.model,
+            effort: settings.effort,
+            mock: settings.mockAi,
+            ...(request.hint ? { hint: request.hint } : {}),
+          });
 
       job.recordUsage(result.usage);
 

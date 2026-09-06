@@ -19,6 +19,7 @@
     "core/**/*.ts",
     "shared/**/*.ts",
     "tests/**/*.ts",
+    "scripts/**/*.ts",
     "vite.config.ts"
   ]
 }

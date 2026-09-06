@@ -54,6 +54,22 @@ export const ProposalSchema = z.object({
 
 export type ProposalOutput = z.infer<typeof ProposalSchema>;
 
+/**
+ * The same constraints as a plain JSON Schema, for callers that cannot take a Zod
+ * object - currently the Claude Code CLI's `--json-schema`.
+ *
+ * `$schema` is dropped deliberately. It only declares which dialect the document
+ * is written in, and a validator without a local copy of the 2020-12 meta-schema
+ * rejects the entire document over that one unresolvable ref. Removing it changes
+ * no constraint; every keyword used here means the same thing in every dialect.
+ */
+export function proposalJsonSchema(): Record<string, unknown> {
+  const { $schema: _dialect, ...rest } = z.toJSONSchema(
+    ProposalSchema,
+  ) as Record<string, unknown>;
+  return rest;
+}
+
 export interface Normalised {
   value: ProposalOutput;
   /** Adjustments made after the model returned - shown so nothing is silently rewritten. */

@@ -335,15 +335,21 @@ export async function getEstimate(repos: number): Promise<{
   model: string;
   batchMode: boolean;
   mockAi: boolean;
+  /** True when the run costs nothing in API credits - mock, or the Claude Code CLI. */
+  free: boolean;
   estimatedCostUsd: number;
 }> {
   const settings = await store.readSettings();
+  // Claude Code bills a subscription, not this account's API credits, so a dollar
+  // estimate would be a lie rather than a rounding error.
+  const free = settings.mockAi || settings.provider === "claude-code";
   return {
     repos,
     model: settings.model,
     batchMode: settings.batchMode,
     mockAi: settings.mockAi,
-    estimatedCostUsd: settings.mockAi
+    free,
+    estimatedCostUsd: free
       ? 0
       : estimateRun(repos, settings.model, settings.batchMode),
   };
@@ -357,7 +363,13 @@ async function begin(
 ): Promise<string> {
   const settings = await store.readSettings();
   try {
-    return startJob(kind, settings.model, settings.batchMode, run).id;
+    return startJob(
+      kind,
+      settings.model,
+      settings.batchMode,
+      settings.provider,
+      run,
+    ).id;
   } catch (err) {
     throw new ApiError(err instanceof Error ? err.message : String(err), 409);
   }

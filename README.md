@@ -31,6 +31,10 @@ Open `http://127.0.0.1:5123`. On first run you are asked for two credentials:
 | Anthropic API key | [console.anthropic.com](https://console.anthropic.com/settings/keys)                               | any key — testing it is free        |
 | GitHub token      | [github.com/settings/tokens](https://github.com/settings/tokens/new?scopes=repo&description=gitms) | classic token with the `repo` scope |
 
+If you have a Claude subscription and would rather not buy API credits, skip the
+Anthropic key and set Settings → Provider to **Claude Code CLI** — see
+[Providers](#providers) below.
+
 A fine-grained GitHub token works too, but needs Metadata: read, Contents: write and Administration: write. GitHub does not report a fine-grained token's permissions, so the app cannot verify them before the run and says so.
 
 Both keys are held in the tab by default and disappear when you close it. "Remember in this browser" keeps them in the site's local storage so they survive a reload — that is not encryption, and the app says so rather than implying otherwise. Neither key is ever sent anywhere except to Anthropic and GitHub.
@@ -58,11 +62,28 @@ The failure mode that matters is a confident README describing features the proj
 
 Read the generated README before approving it. That is the step that makes this safe.
 
+## Providers
+
+Generation can get its model from either of two places, chosen in Settings → Provider. Everything else — the prompt, the schema, the evidence bundle, the review step — is identical, so a proposal is built the same way either way.
+
+| Provider            | Billed to                  | Works where                             |
+| ------------------- | -------------------------- | --------------------------------------- |
+| **Anthropic API key** (default) | API credits, per token | anywhere, including a deployed copy |
+| **Claude Code CLI** | your Claude subscription   | local `npm run dev` only                |
+
+A Claude Pro or Max subscription does **not** fund API credits — they are separate products, and there is no key that bills a subscription. The CLI path exists to close that gap: the dev server exposes a small local endpoint that runs `claude --print` with the same system prompt and a JSON Schema derived from the same Zod schema, and hands the result back to the browser to validate.
+
+Because it spawns a process, it is local-only by nature — a deployed page cannot run a binary. The Settings screen probes for it and says so instead of offering an option that would fail on the first repo. It needs the [Claude Code CLI](https://claude.com/claude-code) installed and signed in (`claude` once in a terminal); gitms looks on `PATH` first, then in the usual install locations, then in the VS Code extension's bundled copy. Set `GITMS_CLAUDE_BIN` to point at a specific binary.
+
+The tradeoff is overhead: each repo is a fresh CLI invocation carrying Claude Code's own harness, so it spends more tokens per repo against your subscription's limits than the API path spends against credits. Consecutive repos in a run reuse the prompt cache.
+
 ## Cost
 
-Roughly **$0.18 per repository** on `claude-opus-5`, or **$0.07** on `claude-sonnet-5` (Settings → Model). Batch mode halves either. The system prompt is identical for every repo in a run and marked as a cache breakpoint, so every request after the first reads it from cache — the run view shows the cache-read count, which should be non-zero from the second repo onward.
+On the API provider, roughly **$0.18 per repository** on `claude-opus-5`, or **$0.07** on `claude-sonnet-5` (Settings → Model). Batch mode halves either. The system prompt is identical for every repo in a run and marked as a cache breakpoint, so every request after the first reads it from cache — the run view shows the cache-read count, which should be non-zero from the second repo onward.
 
-Mock mode runs the entire pipeline without calling the API, for free. Use it once before spending anything.
+On the Claude Code provider nothing is charged to the API account, so the run view labels the dollar figure as what the run *would* have cost rather than as money spent.
+
+Mock mode runs the entire pipeline without calling anything, for free. Use it once before spending anything.
 
 ## Safety
 
@@ -71,7 +92,7 @@ Mock mode runs the entire pipeline without calling the API, for free. Use it onc
 - Existing READMEs are backed up locally before being replaced.
 - Applying is idempotent — an applied repo is skipped on re-runs.
 - Forks, archived and private repos are excluded by default.
-- There is no gitms server. The page calls `api.anthropic.com` and `api.github.com` directly, so your keys are never transmitted to a third party, and a Content-Security-Policy `connect-src` naming only those two hosts is served alongside the app.
+- There is no gitms server. The page calls `api.anthropic.com` and `api.github.com` directly, so your keys are never transmitted to a third party, and a Content-Security-Policy `connect-src` naming only those two hosts is served alongside the app. The Claude Code bridge is same-origin and exists only in the dev server, so it neither widens that list nor ships in `web/dist`.
 
 ## Commands
 
@@ -100,7 +121,7 @@ core/      GitHub and Anthropic clients, analysis, prompts, pricing
 web/       React UI, plus the browser-side store, jobs and pipelines
 shared/    Types and constants used throughout
 brand/     Logo, icons, social image, brand guidelines
-scripts/   Dev tooling: brand rendering
+scripts/   Dev tooling: brand rendering, the dev-only Claude Code bridge
 tests/     vitest
 ```
 

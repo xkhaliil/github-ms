@@ -5,6 +5,7 @@ import type {
   JobStep,
   ModelId,
   PlannedCall,
+  Provider,
   UsageTotals,
 } from "@shared/types.js";
 
@@ -35,7 +36,12 @@ export class Job {
   private model: ModelId;
   private batch: boolean;
 
-  constructor(kind: JobKind, model: ModelId, batch: boolean) {
+  constructor(
+    kind: JobKind,
+    model: ModelId,
+    batch: boolean,
+    provider: Provider,
+  ) {
     this.kind = kind;
     this.model = model;
     this.batch = batch;
@@ -50,6 +56,7 @@ export class Job {
       steps: [],
       usage: emptyUsage(),
       error: null,
+      provider,
     };
   }
 
@@ -151,6 +158,7 @@ export function startJob(
   kind: JobKind,
   model: ModelId,
   batch: boolean,
+  provider: Provider,
   run: (job: Job) => Promise<void>,
 ): Job {
   if (currentJob())
@@ -158,7 +166,7 @@ export function startJob(
       "A job is already running. Wait for it to finish or cancel it.",
     );
 
-  const job = new Job(kind, model, batch);
+  const job = new Job(kind, model, batch, provider);
   jobs.set(job.id, job);
   active = job;
 

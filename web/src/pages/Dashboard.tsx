@@ -42,7 +42,12 @@ export function Dashboard() {
   const [filter, setFilter] = useState<Filter>("all");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [estimate, setEstimate] = useState<{ cost: number; mock: boolean } | null>(null);
+  // `note` replaces the dollar figure whenever a run costs no API credits, so the
+  // badge never shows "$0.00" for a run that is really billed somewhere else.
+  const [estimate, setEstimate] = useState<{
+    cost: number;
+    note: string | null;
+  } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -95,7 +100,14 @@ export function Dashboard() {
       return;
     }
     void getEstimate(selected.size).then((e) =>
-      setEstimate({ cost: e.estimatedCostUsd, mock: e.mockAi }),
+      setEstimate({
+        cost: e.estimatedCostUsd,
+        note: e.mockAi
+          ? "mock mode · free"
+          : e.free
+            ? "Claude subscription · no API cost"
+            : null,
+      }),
     );
   }, [selected]);
 
@@ -323,7 +335,7 @@ export function Dashboard() {
             </span>
             {estimate && (
               <span className="text-[12.5px] text-subtle">
-                {estimate.mock ? "mock mode · free" : `≈ ${money(estimate.cost)}`}
+                {estimate.note ?? `≈ ${money(estimate.cost)}`}
               </span>
             )}
             <span className="h-4 w-px bg-line-strong" />

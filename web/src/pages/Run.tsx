@@ -289,7 +289,14 @@ function JobView({ job, onCancel }: { job: JobSnapshot; onCancel: () => void }) 
 
       {job.kind === "generate" && (
         <div className="mb-4 flex flex-wrap gap-x-6 gap-y-1 rounded-control border border-line bg-bg px-3 py-2.5 text-[12px]">
-          <Meta label="Spent" value={money(job.usage.estimatedCostUsd)} />
+          {job.provider === "claude-code" ? (
+            <Meta
+              label="Cost"
+              value={`subscription · ${money(job.usage.estimatedCostUsd)} if billed`}
+            />
+          ) : (
+            <Meta label="Spent" value={money(job.usage.estimatedCostUsd)} />
+          )}
           <Meta label="Input" value={job.usage.inputTokens.toLocaleString()} />
           <Meta label="Output" value={job.usage.outputTokens.toLocaleString()} />
           <Meta
