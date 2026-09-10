@@ -16,6 +16,9 @@
   "license": "MIT",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "npm run typecheck && vite build",
@@ -27,6 +30,7 @@
     "brand:render": "node scripts/render-brand.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/claude-code": "^2.0.0",
     "@anthropic-ai/sdk": "^0.124.0",
     "@octokit/plugin-retry": "^8.0.1",
     "@octokit/plugin-throttling": "^11.0.1",

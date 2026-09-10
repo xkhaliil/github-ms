@@ -14,12 +14,14 @@ import type { AuthStatus, GithubIdentity } from "@shared/types.js";
 
 const ANTHROPIC_KEY = "gitms.anthropicKey";
 const GITHUB_KEY = "gitms.githubToken";
+const CLAUDE_CODE_KEY = "gitms.claudeCodeToken";
 const IDENTITY_KEY = "gitms.githubIdentity";
 const REMEMBER_KEY = "gitms.remember";
 
 interface State {
   anthropicKey: string | null;
   githubToken: string | null;
+  claudeCodeToken: string | null;
   githubIdentity: GithubIdentity | null;
   remembered: boolean;
 }
@@ -27,6 +29,7 @@ interface State {
 const state: State = {
   anthropicKey: null,
   githubToken: null,
+  claudeCodeToken: null,
   githubIdentity: null,
   remembered: false,
 };
@@ -66,8 +69,10 @@ function readBoth(key: string): { value: string | null; persistent: boolean } {
 export function loadCredentials(): void {
   const anthropic = readBoth(ANTHROPIC_KEY);
   const github = readBoth(GITHUB_KEY);
+  const claudeCode = readBoth(CLAUDE_CODE_KEY);
   state.anthropicKey = anthropic.value;
   state.githubToken = github.value;
+  state.claudeCodeToken = claudeCode.value;
   state.remembered = safeGet(localStorage, REMEMBER_KEY) === "true";
 
   const raw = readBoth(IDENTITY_KEY).value;
@@ -100,6 +105,7 @@ export function setRemember(remember: boolean): void {
   // Re-persist through the new target so the values follow the setting.
   persist(ANTHROPIC_KEY, state.anthropicKey);
   persist(GITHUB_KEY, state.githubToken);
+  persist(CLAUDE_CODE_KEY, state.claudeCodeToken);
   persist(
     IDENTITY_KEY,
     state.githubIdentity ? JSON.stringify(state.githubIdentity) : null,
@@ -115,6 +121,11 @@ export function setGithubToken(token: string | null): void {
   state.githubToken = token?.trim() ? token.trim() : null;
   persist(GITHUB_KEY, state.githubToken);
   if (!state.githubToken) setGithubIdentity(null);
+}
+
+export function setClaudeCodeToken(token: string | null): void {
+  state.claudeCodeToken = token?.trim() ? token.trim() : null;
+  persist(CLAUDE_CODE_KEY, state.claudeCodeToken);
 }
 
 export function setGithubIdentity(identity: GithubIdentity | null): void {
@@ -141,8 +152,13 @@ export function requireGithubToken(): string {
 export function getCredentials(): {
   anthropicKey: string | null;
   githubToken: string | null;
+  claudeCodeToken: string | null;
 } {
-  return { anthropicKey: state.anthropicKey, githubToken: state.githubToken };
+  return {
+    anthropicKey: state.anthropicKey,
+    githubToken: state.githubToken,
+    claudeCodeToken: state.claudeCodeToken,
+  };
 }
 
 /** `sk-ant-api03-abcd...wxyz` -> `sk-ant-...wxyz` */
@@ -164,6 +180,10 @@ export function authStatus(): AuthStatus {
       masked: mask(state.githubToken),
       identity: state.githubIdentity,
     },
+    claudeCode: {
+      present: Boolean(state.claudeCodeToken),
+      masked: mask(state.claudeCodeToken),
+    },
     remembered: state.remembered,
     ready: Boolean(state.anthropicKey && state.githubToken),
   };
@@ -172,8 +192,9 @@ export function authStatus(): AuthStatus {
 export function clearCredentials(): void {
   state.anthropicKey = null;
   state.githubToken = null;
+  state.claudeCodeToken = null;
   state.githubIdentity = null;
-  for (const key of [ANTHROPIC_KEY, GITHUB_KEY, IDENTITY_KEY]) {
+  for (const key of [ANTHROPIC_KEY, GITHUB_KEY, CLAUDE_CODE_KEY, IDENTITY_KEY]) {
     safeRemove(localStorage, key);
     safeRemove(sessionStorage, key);
   }

@@ -9,8 +9,10 @@ import type { Evidence } from "@core/analyze/fingerprint.js";
 import type { Effort, ModelId } from "@shared/types.js";
 
 /**
- * Client for the dev server's Claude Code bridge, which runs generation against a
- * Claude subscription instead of API credits.
+ * Client for the Claude Code bridge, which runs generation against a Claude
+ * subscription instead of API credits. `/api/claude/*` is served by the Vite dev
+ * plugin in `npm run dev` and by real Vercel functions on the deployed site - one
+ * client works against both.
  *
  * The prompt and the schema are the same ones the API path uses, so a proposal is
  * built from identical instructions either way and only the transport differs.
@@ -18,11 +20,13 @@ import type { Effort, ModelId } from "@shared/types.js";
  * Schema, but this is the side that owns what a valid proposal is.
  */
 
-const PREFIX = "/__gitms/claude";
+const PREFIX = "/api/claude";
 
-interface BridgeStatus {
+export interface BridgeStatus {
   available: boolean;
   binary: string | null;
+  /** True when the deployment has no ambient login - a visitor must paste a token. */
+  requiresToken: boolean;
 }
 
 interface BridgePayload {
@@ -36,18 +40,39 @@ interface BridgePayload {
   referenceCostUsd: number;
 }
 
+const UNAVAILABLE: BridgeStatus = {
+  available: false,
+  binary: null,
+  requiresToken: false,
+};
+
 /**
- * Whether subscription-backed generation is possible right now. False on a
- * deployed build, where the endpoint does not exist at all - hence the tolerance
- * for a failed fetch rather than an error.
+ * Whether the Claude Code CLI is packaged and reachable at all here. Tolerant of
+ * a failed fetch rather than throwing, so a misconfigured or ancient deployment
+ * degrades to "unavailable" instead of breaking the Settings page.
  */
 export async function bridgeStatus(): Promise<BridgeStatus> {
   try {
     const res = await fetch(`${PREFIX}/status`);
-    if (!res.ok) return { available: false, binary: null };
+    if (!res.ok) return UNAVAILABLE;
     return (await res.json()) as BridgeStatus;
   } catch {
-    return { available: false, binary: null };
+    return UNAVAILABLE;
+  }
+}
+
+/** Runs a cheap, schema-free ping to confirm a pasted token authenticates. */
+export async function pingClaudeToken(token: string): Promise<void> {
+  const res = await fetch(`${PREFIX}/generate`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ test: true, token }),
+  });
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+    throw new Error(body?.error ?? `The Claude Code bridge failed (${res.status}).`);
   }
 }
 
@@ -58,7 +83,7 @@ export async function bridgeStatus(): Promise<BridgeStatus> {
  */
 export async function generateViaBridge(
   evidence: Evidence,
-  opts: { model: ModelId; effort: Effort; hint?: string },
+  opts: { model: ModelId; effort: Effort; hint?: string; token?: string },
 ): Promise<GenerationResult> {
   const res = await fetch(`${PREFIX}/generate`, {
     method: "POST",
@@ -69,6 +94,7 @@ export async function generateViaBridge(
       model: opts.model,
       effort: opts.effort,
       schema: proposalJsonSchema(),
+      ...(opts.token ? { token: opts.token } : {}),
     }),
   });
 
@@ -104,7 +130,7 @@ export async function generateViaBridge(
     proposal: value,
     notes: [
       ...notes,
-      "Generated through the local Claude Code CLI - billed to your Claude subscription, not API credits.",
+      "Generated through the Claude Code CLI - billed to your Claude subscription, not API credits.",
     ],
     usage: payload.usage,
   };

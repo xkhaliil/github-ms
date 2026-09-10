@@ -16,6 +16,7 @@ import {
   updateMetadata,
 } from "@core/github/apply.js";
 import {
+  getCredentials,
   getGithubIdentity,
   requireAnthropicKey,
   requireGithubToken,
@@ -94,20 +95,23 @@ export interface GenerateRequest {
 }
 
 /**
- * The bridge only exists in the dev server, so the two ways this fails are worth
- * telling apart: a deployed build has no endpoint at all, and a local one can
- * still be missing the CLI it shells out to.
+ * Two different ways this can fail, worth telling apart: the CLI might not be
+ * packaged in this deployment at all (a real deployment problem), or it might be
+ * packaged but waiting on a token this visitor hasn't pasted into Setup yet (the
+ * normal, expected state for a fresh visitor to a deployed copy).
  */
 async function requireBridge(): Promise<void> {
   const status = await bridgeStatus();
-  if (status.available) return;
-
-  throw new Error(
-    status.binary === null
-      ? "Claude Code generation needs the local dev server (`npm run dev`) and the Claude Code CLI on this machine. " +
-        "Install the CLI, or switch Settings back to the Anthropic API key."
-      : "The Claude Code bridge is unavailable.",
-  );
+  if (!status.available) {
+    throw new Error(
+      "The Claude Code CLI is not available on this deployment. Switch Settings back to the Anthropic API key.",
+    );
+  }
+  if (status.requiresToken && !getCredentials().claudeCodeToken) {
+    throw new Error(
+      "Claude Code generation needs a token. Run `claude setup-token` locally and paste it in Setup, or switch Settings back to the Anthropic API key.",
+    );
+  }
 }
 
 export async function runGenerate(
@@ -120,9 +124,11 @@ export async function runGenerate(
 
   // Fail before the loop rather than on the first repo, so nothing is half-run.
   // Each provider has its own precondition, and neither is worth discovering ten
-  // repos in: the API path needs a key, the CLI path needs the local bridge.
+  // repos in: the API path needs a key, the CLI path needs the bridge available
+  // and (on a deployed copy) a token.
   const apiKey = settings.mockAi || viaClaudeCode ? "" : requireAnthropicKey();
   if (viaClaudeCode) await requireBridge();
+  const claudeCodeToken = getCredentials().claudeCodeToken;
 
   const inventory = await readInventory();
   if (!inventory) throw new Error("No scan found. Run a scan first.");
@@ -182,6 +188,7 @@ export async function runGenerate(
             model: settings.model,
             effort: settings.effort,
             ...(request.hint ? { hint: request.hint } : {}),
+            ...(claudeCodeToken ? { token: claudeCodeToken } : {}),
           })
         : await generateProposal(evidence, {
             apiKey,

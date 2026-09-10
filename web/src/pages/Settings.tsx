@@ -16,7 +16,7 @@ import {
   Switch,
 } from "../components/ui.js";
 import { KeyIcon } from "../components/icons.js";
-import { bridgeStatus } from "../lib/bridge.js";
+import { bridgeStatus, type BridgeStatus } from "../lib/bridge.js";
 import {
   EFFORTS,
   MODELS,
@@ -41,20 +41,26 @@ const PROVIDER_LABELS: Record<Provider, string> = {
 };
 
 /**
- * The CLI option is only real when the dev server is serving the bridge and the
- * binary is on this machine, so the hint reports what was actually detected
- * rather than describing a capability the run would then fail on.
+ * Three real states, not one: the CLI might not be packaged here at all (a
+ * deployment problem), it might be packaged but waiting on a token this browser
+ * hasn't saved yet (the normal state for a fresh visitor to a deployed copy), or
+ * it might already be ready - either via a saved token or, in local dev, via
+ * whatever `claude` login already exists on this machine.
  */
 function providerHint(
   provider: Provider,
-  bridge: { available: boolean; binary: string | null } | null,
+  bridge: BridgeStatus | null,
+  hasToken: boolean,
 ): string {
   if (provider === "api") {
     return "Calls api.anthropic.com directly with your key. Billed against API credits, which a Claude subscription does not fund.";
   }
-  if (bridge === null) return "Checking for a local Claude Code CLI…";
+  if (bridge === null) return "Checking for the Claude Code CLI…";
   if (!bridge.available) {
-    return "Not available here. This needs the local dev server (npm run dev) and the Claude Code CLI installed — a deployed copy of this site cannot run one.";
+    return "The Claude Code CLI is not available on this deployment. Switch back to the Anthropic API key, or ask whoever runs this site to add it.";
+  }
+  if (bridge.requiresToken && !hasToken) {
+    return "Needs a token: run `claude setup-token` on your own machine and paste it in Setup. It authenticates against your own Claude subscription, not this site's.";
   }
   return `Runs generation through ${bridge.binary}, billed to your Claude subscription instead of API credits. No API key needed.`;
 }
@@ -67,10 +73,7 @@ export function SettingsPage({
   onAuthChange: () => Promise<void>;
 }) {
   const [settings, setSettings] = useState<Settings | null>(null);
-  const [bridge, setBridge] = useState<{
-    available: boolean;
-    binary: string | null;
-  } | null>(null);
+  const [bridge, setBridge] = useState<BridgeStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmWipe, setConfirmWipe] = useState(false);
@@ -114,7 +117,10 @@ export function SettingsPage({
 
       <Panel title="Generation">
         <div className="mb-4">
-          <Field label="Provider" hint={providerHint(settings.provider, bridge)}>
+          <Field
+            label="Provider"
+            hint={providerHint(settings.provider, bridge, auth.claudeCode.present)}
+          >
             <Select
               value={settings.provider}
               onChange={(e) =>
@@ -214,6 +220,11 @@ export function SettingsPage({
           />
           <Row label="GitHub" value={auth.github.masked ?? "not set"} mono />
           <Row
+            label="Claude Code token"
+            value={auth.claudeCode.masked ?? "not set"}
+            mono
+          />
+          <Row
             label="Storage"
             value={auth.remembered ? "saved in this browser" : "this tab only"}
           />
@@ -238,7 +249,7 @@ export function SettingsPage({
                   })();
                 }}
               >
-                Confirm — forget both keys
+                Confirm — forget all stored credentials
               </Button>
               <Button variant="ghost" onClick={() => setConfirmClear(false)}>
                 Cancel

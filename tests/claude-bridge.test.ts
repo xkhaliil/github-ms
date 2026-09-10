@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildArgs } from "../scripts/claude-bridge.js";
+import { buildArgs } from "../core/ai/claude-cli.js";
 import { proposalJsonSchema } from "../core/ai/schemas.js";
 
 const request = {

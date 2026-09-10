@@ -5,7 +5,7 @@
 
 /* ---------------------------------------------------------------- auth --- */
 
-export type CredentialKind = "anthropic" | "github";
+export type CredentialKind = "anthropic" | "github" | "claude-code";
 
 export interface GithubIdentity {
   login: string;
@@ -23,12 +23,23 @@ export interface AnthropicIdentity {
   model: string;
 }
 
+/** Nothing to report beyond "it authenticated" - the CLI ping has no profile to read. */
+export interface ClaudeCodeIdentity {
+  authenticated: true;
+}
+
 export type ConnectionTest =
   | { ok: true; kind: "github"; identity: GithubIdentity; warning?: string }
   | {
       ok: true;
       kind: "anthropic";
       identity: AnthropicIdentity;
+      warning?: string;
+    }
+  | {
+      ok: true;
+      kind: "claude-code";
+      identity: ClaudeCodeIdentity;
       warning?: string;
     }
   | { ok: false; kind: CredentialKind; error: string; hint?: string };
@@ -41,6 +52,8 @@ export interface AuthStatus {
     masked: string | null;
     identity: GithubIdentity | null;
   };
+  /** Optional - only needed when Settings is set to the Claude Code CLI provider. */
+  claudeCode: { present: boolean; masked: string | null };
   /** True when credentials were loaded from (or saved to) the on-disk file. */
   remembered: boolean;
   ready: boolean;
@@ -213,11 +226,12 @@ export const EFFORTS = ["low", "medium", "high"] as const;
 export type Effort = (typeof EFFORTS)[number];
 
 /**
- * Where generation gets its model from. `api` is the deployable path: the browser
- * calls api.anthropic.com with the visitor's own key, billed against API credits.
- * `claude-code` runs the local Claude Code CLI instead, which bills against a
- * Claude subscription - it needs the dev server's bridge, so it is unavailable on
- * a deployed copy of the site.
+ * Where generation gets its model from. `api` calls api.anthropic.com directly
+ * with the visitor's own key, billed against API credits. `claude-code` relays
+ * through `/api/claude/*` to a spawned `claude` CLI process instead, billed
+ * against a Claude subscription - in dev that's the visitor's own local login,
+ * and on the deployed site it's a token they paste in Setup (from their own
+ * `claude setup-token`), never the site owner's.
  */
 export const PROVIDERS = ["api", "claude-code"] as const;
 export type Provider = (typeof PROVIDERS)[number];

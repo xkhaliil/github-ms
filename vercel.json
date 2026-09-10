@@ -3,7 +3,15 @@
   "buildCommand": "npm run build",
   "outputDirectory": "web/dist",
   "framework": null,
-  "rewrites": [{ "source": "/((?!assets/).*)", "destination": "/index.html" }],
+  "functions": {
+    "api/claude/*.ts": {
+      "maxDuration": 300,
+      "includeFiles": "node_modules/@anthropic-ai/claude-code*/**"
+    }
+  },
+  "rewrites": [
+    { "source": "/((?!assets/|api/).*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

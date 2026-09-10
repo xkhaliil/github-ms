@@ -26,11 +26,15 @@ export function Setup({
 }) {
   const [anthropicKey, setAnthropicKey] = useState("");
   const [githubToken, setGithubToken] = useState("");
+  const [claudeCodeToken, setClaudeCodeToken] = useState("");
   const [remember, setRemember] = useState(auth.remembered);
   const [anthropicTest, setAnthropicTest] = useState<TestState>({
     status: "idle",
   });
   const [githubTest, setGithubTest] = useState<TestState>({ status: "idle" });
+  const [claudeCodeTest, setClaudeCodeTest] = useState<TestState>({
+    status: "idle",
+  });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -42,10 +46,19 @@ export function Setup({
     (githubTest.status === "done" && githubTest.result.ok) ||
     (auth.github.present && githubToken === "");
 
-  async function runTest(kind: "anthropic" | "github") {
-    const setState = kind === "anthropic" ? setAnthropicTest : setGithubTest;
+  async function runTest(kind: "anthropic" | "github" | "claude-code") {
+    const setState =
+      kind === "anthropic"
+        ? setAnthropicTest
+        : kind === "github"
+          ? setGithubTest
+          : setClaudeCodeTest;
     const typed =
-      kind === "anthropic" ? anthropicKey.trim() : githubToken.trim();
+      kind === "anthropic"
+        ? anthropicKey.trim()
+        : kind === "github"
+          ? githubToken.trim()
+          : claudeCodeToken.trim();
     setState({ status: "testing" });
     try {
       setState({
@@ -71,18 +84,22 @@ export function Setup({
       const payload: {
         anthropicKey?: string;
         githubToken?: string;
+        claudeCodeToken?: string;
         remember?: boolean;
       } = {
         remember,
       };
       if (anthropicKey.trim()) payload.anthropicKey = anthropicKey.trim();
       if (githubToken.trim()) payload.githubToken = githubToken.trim();
+      if (claudeCodeToken.trim())
+        payload.claudeCodeToken = claudeCodeToken.trim();
 
       const result = await saveCredentials(payload);
       // Clear the inputs: the values are held by the credential store now and
       // should not sit in the DOM where a screenshot or extension can read them.
       setAnthropicKey("");
       setGithubToken("");
+      setClaudeCodeToken("");
       await onSaved();
       if (result.status.ready) navigate({ page: "dashboard" });
     } catch (err) {
@@ -97,7 +114,8 @@ export function Setup({
       <header className="mb-9">
         <h1 className="text-[22px] font-semibold">Connect your accounts</h1>
         <p className="mt-2 text-[13.5px] leading-relaxed text-muted">
-          Both keys stay in this browser. gitms has no server — the page calls{" "}
+          These stay in this browser. The Anthropic key and GitHub token are
+          sent straight to{" "}
           <span className="font-mono text-[12.5px] text-text">
             api.anthropic.com
           </span>{" "}
@@ -105,8 +123,10 @@ export function Setup({
           <span className="font-mono text-[12.5px] text-text">
             api.github.com
           </span>{" "}
-          directly, so your keys are never sent to us and there is nowhere for
-          them to be logged.
+          — gitms has no server in that path. The optional Claude Code token
+          below is the one exception: spawning that CLI needs a server, so it
+          passes through this site's own relay for one call at a time and is
+          never stored there.
         </p>
       </header>
 
@@ -210,6 +230,56 @@ export function Setup({
             disabled={
               githubTest.status === "testing" ||
               (!githubToken.trim() && !auth.github.present)
+            }
+          >
+            Test connection
+          </Button>
+        </CredentialStep>
+
+        <CredentialStep
+          index={3}
+          title="Claude Code OAuth token (optional)"
+          subtitle="Only needed if you pick 'Claude Code CLI' in Settings — bills your Claude subscription instead of API credits."
+          state={claudeCodeTest}
+          describe={() => "Token accepted"}
+        >
+          <Field
+            label="Token"
+            hint={
+              <>
+                Run{" "}
+                <span className="font-mono text-[12.5px] text-text">
+                  claude setup-token
+                </span>{" "}
+                on your own machine (after{" "}
+                <span className="font-mono text-[12.5px] text-text">
+                  claude login
+                </span>
+                ) and paste the result here. It stays in this browser and is
+                sent only to this site's own relay, which spawns the CLI and
+                discards the token afterwards — never stored server-side.
+              </>
+            }
+          >
+            <Input
+              type="password"
+              autoComplete="off"
+              spellCheck={false}
+              value={claudeCodeToken}
+              onChange={(e) => {
+                setClaudeCodeToken(e.target.value);
+                setClaudeCodeTest({ status: "idle" });
+              }}
+              placeholder={auth.claudeCode.masked ?? "sk-ant-oat01-..."}
+              className="font-mono"
+            />
+          </Field>
+          <Button
+            size="sm"
+            onClick={() => void runTest("claude-code")}
+            disabled={
+              claudeCodeTest.status === "testing" ||
+              (!claudeCodeToken.trim() && !auth.claudeCode.present)
             }
           >
             Test connection

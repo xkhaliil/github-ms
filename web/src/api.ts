@@ -16,6 +16,7 @@ import {
 } from "@core/ai/schemas.js";
 import { estimateRun } from "@core/pricing.js";
 import * as creds from "./lib/credentials.js";
+import { pingClaudeToken } from "./lib/bridge.js";
 import * as store from "./lib/store.js";
 import {
   currentJob,
@@ -66,13 +67,17 @@ export const getAuthStatus = async (): Promise<AuthStatus> =>
   creds.authStatus();
 
 export async function testCredential(
-  kind: "anthropic" | "github",
+  kind: "anthropic" | "github" | "claude-code",
   value?: string,
 ): Promise<ConnectionTest> {
   const held = creds.getCredentials();
   const candidate =
     value?.trim() ||
-    (kind === "anthropic" ? held.anthropicKey : held.githubToken) ||
+    (kind === "anthropic"
+      ? held.anthropicKey
+      : kind === "github"
+        ? held.githubToken
+        : held.claudeCodeToken) ||
     "";
 
   if (!candidate) {
@@ -82,8 +87,23 @@ export async function testCredential(
       error:
         kind === "anthropic"
           ? "Enter an Anthropic API key."
-          : "Enter a GitHub token.",
+          : kind === "github"
+            ? "Enter a GitHub token."
+            : "Enter a Claude Code OAuth token.",
     };
+  }
+
+  if (kind === "claude-code") {
+    try {
+      await pingClaudeToken(candidate);
+      return { ok: true, kind, identity: { authenticated: true } };
+    } catch (err) {
+      return {
+        ok: false,
+        kind,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
   }
 
   try {
@@ -114,6 +134,7 @@ export async function testCredential(
 export async function saveCredentials(payload: {
   anthropicKey?: string;
   githubToken?: string;
+  claudeCodeToken?: string;
   remember?: boolean;
 }): Promise<{ status: AuthStatus; permissionsRestricted: boolean }> {
   if (payload.remember !== undefined) creds.setRemember(payload.remember);
@@ -121,6 +142,9 @@ export async function saveCredentials(payload: {
   if (typeof payload.anthropicKey === "string") {
     creds.setAnthropicKey(payload.anthropicKey);
     resetAnthropicCache();
+  }
+  if (typeof payload.claudeCodeToken === "string") {
+    creds.setClaudeCodeToken(payload.claudeCodeToken);
   }
   if (typeof payload.githubToken === "string") {
     creds.setGithubToken(payload.githubToken);

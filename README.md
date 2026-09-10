@@ -55,7 +55,8 @@ Open `http://127.0.0.1:5123`. On first run you are asked for two credentials:
 | GitHub token      | [github.com/settings/tokens](https://github.com/settings/tokens/new?scopes=repo&description=gitms) | classic token with the `repo` scope |
 
 If you have a Claude subscription and would rather not buy API credits, skip the
-Anthropic key and set Settings → Provider to **Claude Code CLI** — see
+Anthropic key and set Settings → Provider to **Claude Code CLI** instead — an
+optional third field in Setup takes a `claude setup-token` token. See
 [Providers](#providers) below.
 
 A fine-grained GitHub token works too, but needs Metadata: read, Contents: write and Administration: write. GitHub does not report a fine-grained token's permissions, so the app cannot verify them before the run and says so.
@@ -79,11 +80,13 @@ Generation can get its model from either of two places, chosen in Settings → P
 | Provider                        | Billed to               | Works where               |
 | -------------------------------- | ------------------------ | -------------------------- |
 | **Anthropic API key** (default) | API credits, per token   | anywhere, including a deployed copy |
-| **Claude Code CLI**              | your Claude subscription | local `npm run dev` only  |
+| **Claude Code CLI**              | your Claude subscription | anywhere — local `npm run dev`, or a deployed copy with your own token |
 
-A Claude Pro or Max subscription does **not** fund API credits — they are separate products, and there is no key that bills a subscription. The CLI path exists to close that gap: the dev server exposes a small local endpoint that runs `claude --print` with the same system prompt and a JSON Schema derived from the same Zod schema, and hands the result back to the browser to validate.
+A Claude Pro or Max subscription does **not** fund API credits — they are separate products, and there is no key that bills a subscription. The CLI path exists to close that gap: a small relay endpoint at `/api/claude/*` runs `claude --print` with the same system prompt and a JSON Schema derived from the same Zod schema, and hands the result back to the browser to validate. In `npm run dev` that endpoint is a Vite plugin; on a deployed copy it's a real Vercel serverless function (see [`api/claude/`](api/claude/)) — the browser code is identical either way.
 
-Because it spawns a process, it is local-only by nature — a deployed page cannot run a binary. The Settings screen probes for it and says so instead of offering an option that would fail on the first repo. It needs the [Claude Code CLI](https://claude.com/claude-code) installed and signed in (`claude` once in a terminal); gitms looks on `PATH` first, then in the usual install locations, then in the VS Code extension's bundled copy. Set `GITMS_CLAUDE_BIN` to point at a specific binary.
+Spawning a process needs a server, so this is the one part of gitms that isn't a direct browser-to-API call. Locally, the endpoint shells out to whatever [Claude Code CLI](https://claude.com/claude-code) is already on this machine and logged in (`claude` once in a terminal); gitms looks on `PATH` first, then the usual install locations, then the VS Code extension's bundled copy, then falls back to the copy bundled as an npm dependency. `GITMS_CLAUDE_BIN` overrides all of that with a specific binary.
+
+On a deployed copy there's no ambient login, so each visitor pastes their **own** token in Setup — run `claude setup-token` on your own machine (after `claude login`) and paste the result. It authenticates against your own subscription, never the site owner's, and the relay never stores it: it rides along in the request that spawns one `claude` process and is discarded when that call returns.
 
 The tradeoff is overhead: each repo is a fresh CLI invocation carrying Claude Code's own harness, so it spends more tokens per repo against your subscription's limits than the API path spends against credits. Consecutive repos in a run reuse the prompt cache.
 
@@ -102,7 +105,7 @@ Mock mode runs the entire pipeline without calling anything, for free. Use it on
 - Existing READMEs are backed up locally before being replaced.
 - Applying is idempotent — an applied repo is skipped on re-runs.
 - Forks, archived and private repos are excluded by default.
-- There is no gitms server. The page calls `api.anthropic.com` and `api.github.com` directly, so your keys are never transmitted to a third party, and a Content-Security-Policy `connect-src` naming only those two hosts is served alongside the app. The Claude Code bridge is same-origin and exists only in the dev server, so it neither widens that list nor ships in `web/dist`.
+- The Anthropic key and GitHub token go straight to `api.anthropic.com` and `api.github.com` — a Content-Security-Policy `connect-src` naming only those two hosts (plus `'self'`) is served alongside the app. The one exception is the Claude Code CLI provider: spawning a process needs a server, so a pasted token travels one same-origin hop to `/api/claude/*` and is used for a single CLI invocation, never stored.
 
 ## Commands
 
@@ -130,29 +133,44 @@ The full identity — mark, palette, type and voice — is in [`brand/BRAND.md`]
 ## Layout
 
 ```
-core/      GitHub and Anthropic clients, analysis, prompts, pricing
+core/      GitHub and Anthropic clients, analysis, prompts, pricing, the Claude Code CLI runner
 web/       React UI, plus the browser-side store, jobs and pipelines
 shared/    Types and constants used throughout
 brand/     Logo, icons, social image, brand guidelines
-scripts/   Dev tooling: brand rendering, the dev-only Claude Code bridge
+scripts/   Dev tooling: brand rendering, the Vite-side Claude Code bridge plugin
+api/       Vercel serverless functions - the deployed copy's Claude Code bridge
 tests/     Vitest
 ```
 
 ## Deploying
 
-The app is a static bundle with no backend, so any static host works. Both
-[`vercel.json`](vercel.json) and [`netlify.toml`](netlify.toml) are checked in
-and set the same build (`npm run build` → `web/dist`), SPA rewrite and security
-headers.
+The app is mostly a static bundle — the Anthropic and GitHub paths need no
+backend at all, so any static host works for those. The Claude Code CLI
+provider is the exception: it needs somewhere to spawn a process, which today
+means Vercel. [`vercel.json`](vercel.json) sets the build (`npm run build` →
+`web/dist`), the `api/claude/*` functions (300s `maxDuration`, with the CLI's
+native binary explicitly included via `includeFiles`), SPA rewrite and
+security headers. [`netlify.toml`](netlify.toml) covers the static parts the
+same way, but has no equivalent functions setup yet — a Netlify deployment
+will show the CLI provider as unavailable, same as any other deployment
+without it.
 
 ```bash
 vercel deploy --prod        # or: connect the repo at vercel.com
-netlify deploy --prod       # or: connect the repo at netlify.com
 ```
 
-No environment variables are needed — deliberately. Each visitor supplies their
-own Anthropic key and GitHub token, which stay in their browser, so a deployment
-holds no secrets and cannot spend anyone else's credit.
+No environment variables are needed — deliberately. Each visitor supplies
+their own Anthropic key, GitHub token, and (optionally) Claude Code token, all
+of which stay in their browser except for the one same-origin hop the Claude
+Code token takes per generation call, so a deployment holds no secrets of its
+own and cannot spend anyone else's credit or subscription.
+
+Two things worth knowing before deploying your own copy: `@anthropic-ai/claude-code`
+requires Node ≥22 (set via `engines.node` in `package.json` — make sure your
+Vercel project's Node version matches), and the 300-second function timeout
+needs [Fluid Compute](https://vercel.com/docs/functions/fluid-compute) enabled
+on the project (on by default for new projects; a Hobby plan gets up to 300s
+with it, same ceiling as Pro's default).
 
 A deployed copy is live at [gitms-sage.vercel.app](https://gitms-sage.vercel.app).
 
